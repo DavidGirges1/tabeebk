@@ -2,6 +2,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { Navbar } from "@/components/layout/navbar";
 import { AggregatorView } from "@/components/search/aggregator-view";
 import { sanitizeSearchQuery } from "@/lib/utils";
+import { MEDICAL_SPECIALTIES } from "@/lib/constants/specialties";
 import {
   Governorate,
   ProviderWithGovernorate,
@@ -133,15 +134,20 @@ export default async function HomePage({ searchParams }: PageProps) {
       (governorateCounts[r.governorate_id] || 0) + 1;
   });
 
-  // Compute unique specialties
+  // Compute unique specialties for filters
   const allDoctorsSpecs = (allDoctorsSpecsResult.data as { specialty_ar: string | null; governorate_id: number }[]) || [];
   const specialtiesSet = new Set<string>();
+  
+  // Add standard medical specialties
+  MEDICAL_SPECIALTIES.forEach((s) => specialtiesSet.add(s));
+  
+  // Add any active specialties from current doctors
   allDoctorsSpecs.forEach((d) => {
-    if (d.specialty_ar && d.specialty_ar.length > 2 && d.specialty_ar.length < 35) {
+    if (d.specialty_ar && d.specialty_ar.trim().length > 1) {
       specialtiesSet.add(d.specialty_ar.trim());
     }
   });
-  const initialSpecialties = Array.from(specialtiesSet).slice(0, 30);
+  const initialSpecialties = Array.from(specialtiesSet).sort((a, b) => a.localeCompare(b, "ar"));
 
   return (
     <div className="flex flex-col min-h-screen bg-background">

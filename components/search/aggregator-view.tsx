@@ -55,6 +55,7 @@ export function AggregatorView({
   const [doctors, setDoctors] = useState<DoctorWithGovernorate[]>(initialDoctors);
   const [doctorsCount, setDoctorsCount] = useState<number>(initialDoctorsCount);
   const [isFetching, setIsFetching] = useState<boolean>(false);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState<boolean>(false);
 
   // Sync / fetch data with AbortController to prevent race conditions and fast typing crashes
   useEffect(() => {
@@ -199,8 +200,18 @@ export function AggregatorView({
                   onFilterChange={updateFilters}
                   onReset={resetFilters}
                   activeCount={activeFiltersCount}
+                  open={isMobileFilterOpen}
+                  onOpenChange={setIsMobileFilterOpen}
                 />
               </div>
+            </div>
+
+            {/* Beginner Quick Search Hint */}
+            <div className="flex items-center justify-center gap-1.5 text-[11px] sm:text-xs text-muted-foreground/80 px-2 text-center select-none">
+              <span className="inline-block">💡</span>
+              <span>
+                <strong>طريقة سريعة:</strong> اكتب اسم المستشفى أو الدكتور أو التخصص أو المحافظة مباشرة، أو استخدم الفلاتر السريعة بالأسفل.
+              </span>
             </div>
 
             {/* Quick Facility Category Pills */}
@@ -223,7 +234,7 @@ export function AggregatorView({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Desktop Filter Sidebar (3 cols on lg) */}
-          <div className="hidden lg:block lg:col-span-3 sticky top-22 p-5 rounded-2xl border bg-card/80 backdrop-blur shadow-sm">
+          <div className="hidden lg:block lg:col-span-3 sticky top-[88px] p-5 rounded-2xl border bg-card/80 backdrop-blur shadow-sm">
             <FilterSidebar
               filters={filters}
               governorates={initialGovernorates}
@@ -378,10 +389,7 @@ export function AggregatorView({
       <MobileBottomNav
         activeTab={filters.tab}
         onTabChange={(tab) => updateFilters({ tab })}
-        onOpenFilter={() => {
-          const trigger = document.querySelector('[data-state="closed"]') as HTMLElement;
-          trigger?.click();
-        }}
+        onOpenFilter={() => setIsMobileFilterOpen(true)}
         activeFilterCount={activeFiltersCount}
       />
     </div>

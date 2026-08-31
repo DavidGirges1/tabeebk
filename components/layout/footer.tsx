@@ -1,9 +1,18 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { HeartPulse, HeartHandshake, ShieldCheck, Code, Sparkles, Building2, User, BookOpen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export function Footer() {
+  const pathname = usePathname();
+
+  // Hide the public footer on admin routes
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
   return (
     <footer className="w-full border-t bg-slate-900 text-slate-200 mt-auto select-none">
       <div className="container max-w-7xl mx-auto px-4 sm:px-6 py-12">

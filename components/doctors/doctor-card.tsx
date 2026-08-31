@@ -158,6 +158,11 @@ export function DoctorCard({ doctor, onSelect }: DoctorCardProps) {
             size="sm"
             variant="ghost"
             className="h-9 px-2.5 text-xs text-muted-foreground group-hover:text-indigo-600 gap-1 font-medium mr-auto"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect?.(doctor);
+            }}
+            aria-label={`عرض تفاصيل ${doctor.doctor_name_ar}`}
           >
             <span>التفاصيل</span>
             <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />

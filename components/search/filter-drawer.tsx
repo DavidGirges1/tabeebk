@@ -25,6 +25,8 @@ interface FilterDrawerProps {
   onFilterChange: (newFilters: Partial<FilterState>) => void;
   onReset: () => void;
   activeCount: number;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function FilterDrawer({
@@ -36,8 +38,12 @@ export function FilterDrawer({
   onFilterChange,
   onReset,
   activeCount,
+  open: controlledOpen,
+  onOpenChange: setControlledOpen,
 }: FilterDrawerProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setIsOpen = setControlledOpen || setInternalOpen;
 
   const handleFilterSelect = (newFilters: Partial<FilterState>) => {
     onFilterChange(newFilters);
