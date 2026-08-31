@@ -115,3 +115,12 @@ export function parsePhones(phonesStr: string | null | undefined): string[] {
 export function formatTelLink(phone: string): string {
   return phone.replace(/[\s\-_()]+/g, "");
 }
+
+/**
+ * Generates a Google Maps search URL combining name and address.
+ */
+export function getGoogleMapsUrl(name: string, address?: string | null): string {
+  const query = [name, address].filter(Boolean).join(" ");
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+

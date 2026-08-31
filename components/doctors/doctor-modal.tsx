@@ -11,8 +11,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DoctorWithGovernorate } from "@/lib/supabase/types";
-import { parsePhones, formatTelLink } from "@/lib/utils";
+import { parsePhones, formatTelLink, getGoogleMapsUrl } from "@/lib/utils";
 import { MapPin, Phone, Stethoscope, Copy, Check, FileText, Share2, User } from "lucide-react";
+import { GoogleMapsIcon } from "@/components/common/google-maps-icon";
 
 interface DoctorModalProps {
   doctor: DoctorWithGovernorate | null;
@@ -114,24 +115,39 @@ export function DoctorModal({ doctor, isOpen, onClose }: DoctorModalProps) {
                 </div>
               </div>
 
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 px-2 shrink-0 gap-1 text-xs text-muted-foreground hover:text-foreground"
-                onClick={handleCopyAddress}
-              >
-                {copiedAddr ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>تم النسخ</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5" />
-                    <span>نسخ</span>
-                  </>
-                )}
-              </Button>
+              <div className="flex items-center gap-1 shrink-0">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-background/80 rounded-lg"
+                  onClick={handleCopyAddress}
+                  title={copiedAddr ? "تم النسخ" : "نسخ العنوان"}
+                  aria-label="نسخ العنوان"
+                >
+                  {copiedAddr ? (
+                    <Check className="w-4 h-4 text-emerald-600" />
+                  ) : (
+                    <Copy className="w-4 h-4" />
+                  )}
+                </Button>
+
+                <Button
+                  asChild
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg"
+                  title="البحث في خرائط Google"
+                  aria-label="البحث في خرائط Google"
+                >
+                  <a
+                    href={getGoogleMapsUrl(doctor.doctor_name_ar, doctor.address_ar)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <GoogleMapsIcon className="w-4 h-4" />
+                  </a>
+                </Button>
+              </div>
             </div>
           )}
 
