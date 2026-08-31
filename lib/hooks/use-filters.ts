@@ -45,7 +45,7 @@ export function useFilters() {
 
       startTransition(() => {
         const queryStr = params.toString();
-        router.push(`${pathname}${queryStr ? `?${queryStr}` : ""}`, {
+        router.replace(`${pathname}${queryStr ? `?${queryStr}` : ""}`, {
           scroll: false,
         });
       });
@@ -55,7 +55,7 @@ export function useFilters() {
 
   const resetFilters = useCallback(() => {
     startTransition(() => {
-      router.push(pathname, { scroll: false });
+      router.replace(pathname, { scroll: false });
     });
   }, [pathname, router]);
 

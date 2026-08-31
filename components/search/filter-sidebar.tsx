@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { Filter, MapPin, Building, Stethoscope, RotateCcw, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Governorate, ProviderTypeEnum } from "@/lib/supabase/types";
 import { PROVIDER_TYPES_MAP, cn } from "@/lib/utils";
 import { FilterState } from "@/lib/hooks/use-filters";
@@ -29,25 +28,30 @@ export function FilterSidebar({
   className,
 }: FilterSidebarProps) {
   const [govSearch, setGovSearch] = useState("");
+  const [specSearch, setSpecSearch] = useState("");
 
   const filteredGovs = governorates.filter((g) =>
     g.name_ar.toLowerCase().includes(govSearch.trim().toLowerCase())
   );
 
+  const filteredSpecialties = specialties.filter((s) =>
+    s.toLowerCase().includes(specSearch.trim().toLowerCase())
+  );
+
   const providerTypeKeys = Object.keys(PROVIDER_TYPES_MAP) as ProviderTypeEnum[];
 
   return (
-    <aside className={cn("space-y-6", className)}>
+    <aside className={cn("space-y-6 select-none", className)}>
       {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b">
+      <div className="flex items-center justify-between pb-3 border-b border-border/70">
         <div className="flex items-center gap-2 font-bold text-base text-foreground">
-          <Filter className="w-5 h-5 text-primary" />
+          <Filter className="w-4 h-4 text-primary" />
           <span>تصفية النتائج</span>
         </div>
         {(filters.gov || filters.type || filters.specialty || filters.q) && (
           <button
             onClick={onReset}
-            className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 font-medium"
+            className="text-xs text-primary hover:text-primary/80 transition-colors flex items-center gap-1 font-semibold"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             إعادة ضبط
@@ -66,21 +70,21 @@ export function FilterSidebar({
             {filters.type && (
               <button
                 onClick={() => onFilterChange({ type: "" })}
-                className="text-[11px] text-primary hover:underline"
+                className="text-[11px] text-primary hover:underline font-semibold"
               >
                 الكل
               </button>
             )}
           </div>
 
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             <button
               onClick={() => onFilterChange({ type: "" })}
               className={cn(
                 "w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all text-right",
                 !filters.type
                   ? "bg-primary text-primary-foreground font-semibold shadow-sm"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  : "text-muted-foreground hover:bg-muted/80 hover:text-foreground"
               )}
             >
               <span>🏥 جميع المنشآت</span>
@@ -89,7 +93,7 @@ export function FilterSidebar({
                   className={cn(
                     "text-[10px] px-2 py-0.5 rounded-full font-mono",
                     !filters.type
-                      ? "bg-primary-foreground/20 text-primary-foreground"
+                      ? "bg-primary-foreground/20 text-primary-foreground font-bold"
                       : "bg-muted-foreground/10 text-muted-foreground"
                   )}
                 >
@@ -113,7 +117,7 @@ export function FilterSidebar({
                     "w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all text-right",
                     isSelected
                       ? "bg-primary text-primary-foreground font-semibold shadow-sm"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      : "text-muted-foreground hover:bg-muted/80 hover:text-foreground"
                   )}
                 >
                   <span className="flex items-center gap-2">
@@ -126,7 +130,7 @@ export function FilterSidebar({
                       className={cn(
                         "text-[10px] px-2 py-0.5 rounded-full font-mono",
                         isSelected
-                          ? "bg-primary-foreground/20 text-primary-foreground"
+                          ? "bg-primary-foreground/20 text-primary-foreground font-bold"
                           : "bg-muted-foreground/10 text-muted-foreground"
                       )}
                     >
@@ -141,7 +145,7 @@ export function FilterSidebar({
       )}
 
       {/* Governorates Filter */}
-      <div className="space-y-3 pt-3 border-t">
+      <div className="space-y-3 pt-3 border-t border-border/70">
         <div className="flex items-center justify-between">
           <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
             <MapPin className="w-3.5 h-3.5 text-primary" />
@@ -150,7 +154,7 @@ export function FilterSidebar({
           {filters.gov && (
             <button
               onClick={() => onFilterChange({ gov: "" })}
-              className="text-[11px] text-primary hover:underline"
+              className="text-[11px] text-primary hover:underline font-semibold"
             >
               الكل
             </button>
@@ -158,7 +162,7 @@ export function FilterSidebar({
         </div>
 
         {/* Search inside governorates */}
-        {governorates.length > 8 && (
+        {governorates.length > 6 && (
           <div className="relative">
             <Search className="w-3.5 h-3.5 absolute right-2.5 top-2.5 text-muted-foreground" />
             <input
@@ -213,9 +217,9 @@ export function FilterSidebar({
         </div>
       </div>
 
-      {/* Specialties (if available and tab allows) */}
+      {/* Specialties */}
       {specialties.length > 0 && (
-        <div className="space-y-3 pt-3 border-t">
+        <div className="space-y-3 pt-3 border-t border-border/70">
           <div className="flex items-center justify-between">
             <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
               <Stethoscope className="w-3.5 h-3.5 text-primary" />
@@ -224,12 +228,26 @@ export function FilterSidebar({
             {filters.specialty && (
               <button
                 onClick={() => onFilterChange({ specialty: "" })}
-                className="text-[11px] text-primary hover:underline"
+                className="text-[11px] text-primary hover:underline font-semibold"
               >
                 الكل
               </button>
             )}
           </div>
+
+          {/* Search inside specialties */}
+          {specialties.length > 6 && (
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 absolute right-2.5 top-2.5 text-muted-foreground" />
+              <input
+                type="text"
+                value={specSearch}
+                onChange={(e) => setSpecSearch(e.target.value)}
+                placeholder="ابحث عن تخصص..."
+                className="w-full h-8 pr-8 pl-2 text-xs rounded-lg border bg-background focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+            </div>
+          )}
 
           <div className="max-h-48 overflow-y-auto space-y-1 pr-1 pl-1 scrollbar-thin">
             <button
@@ -244,7 +262,7 @@ export function FilterSidebar({
               <span>جميع التخصصات</span>
             </button>
 
-            {specialties.map((spec) => {
+            {filteredSpecialties.map((spec) => {
               const isSelected = filters.specialty === spec;
 
               return (

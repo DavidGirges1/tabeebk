@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useTransition, useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useFilters, FilterState } from "@/lib/hooks/use-filters";
 import { Governorate, ProviderWithGovernorate, DoctorWithGovernorate } from "@/lib/supabase/types";
@@ -15,7 +15,16 @@ import { PaginationControls } from "@/components/search/pagination-controls";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Building2, User, Layers, Sparkles, Filter, HeartHandshake, BookOpen, ChevronLeft } from "lucide-react";
+import {
+  Building2,
+  User,
+  Layers,
+  Sparkles,
+  HeartHandshake,
+  BookOpen,
+  ChevronLeft,
+  Search,
+} from "lucide-react";
 
 interface AggregatorViewProps {
   initialGovernorates: Governorate[];
@@ -46,11 +55,12 @@ export function AggregatorView({
   const [doctors, setDoctors] = useState<DoctorWithGovernorate[]>(initialDoctors);
   const [doctorsCount, setDoctorsCount] = useState<number>(initialDoctorsCount);
   const [isFetching, setIsFetching] = useState<boolean>(false);
-  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
 
-  // Sync / fetch data when filters change
+  // Sync / fetch data with AbortController to prevent race conditions and fast typing crashes
   useEffect(() => {
+    const controller = new AbortController();
     let isMounted = true;
+
     const fetchData = async () => {
       setIsFetching(true);
       try {
@@ -63,8 +73,14 @@ export function AggregatorView({
         if (filters.page) queryParams.set("page", String(filters.page));
         queryParams.set("pageSize", "12");
 
-        const res = await fetch(`/api/search?${queryParams.toString()}`);
-        if (!res.ok) throw new Error("Search failed");
+        const res = await fetch(`/api/search?${queryParams.toString()}`, {
+          signal: controller.signal,
+        });
+
+        if (!res.ok) {
+          throw new Error("Search request failed");
+        }
+
         const json = await res.json();
 
         if (isMounted) {
@@ -73,10 +89,15 @@ export function AggregatorView({
           setDoctors(json.doctors || []);
           setDoctorsCount(json.doctorsCount || 0);
         }
-      } catch (err) {
-        console.error("Error fetching filtered data", err);
+      } catch (err: any) {
+        if (err?.name === "AbortError") {
+          return; // Expected when user types fast
+        }
+        console.error("Error fetching filtered data:", err);
       } finally {
-        if (isMounted) setIsFetching(false);
+        if (isMounted) {
+          setIsFetching(false);
+        }
       }
     };
 
@@ -84,6 +105,7 @@ export function AggregatorView({
 
     return () => {
       isMounted = false;
+      controller.abort();
     };
   }, [filters.tab, filters.q, filters.gov, filters.type, filters.specialty, filters.page]);
 
@@ -102,94 +124,106 @@ export function AggregatorView({
     filters.tab === "doctors" ? doctorsCount : providersCount;
   const totalPages = Math.ceil((currentTotalForPagination || 1) / pageSize);
 
+  const handleSearchChange = useCallback(
+    (val: string) => {
+      updateFilters({ q: val });
+    },
+    [updateFilters]
+  );
+
   return (
-    <div className="min-h-screen pb-20 md:pb-12">
-      {/* Hero Search Section */}
-      <section className="bg-gradient-to-b from-primary/10 via-primary/5 to-background pt-6 pb-8 border-b border-border/50">
-        <div className="container max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="max-w-3xl mx-auto text-center space-y-3.5 mb-6">
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              <Badge
-                variant="secondary"
-                className="px-3 py-1 text-xs font-bold gap-1.5 rounded-full bg-primary/10 text-primary border-primary/20"
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>دليل شبكة مقدمي الخدمات الطبية بالمحافظات 2026</span>
-              </Badge>
+    <div className="min-h-screen pb-20 md:pb-12 bg-background">
+      {/* Refined & Decluttered Hero Search Section */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-primary/8 via-background to-background pt-8 pb-10 border-b border-border/40">
+        <div className="container max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+          
+          {/* Top Quick Links & Announcements */}
+          <div className="flex flex-wrap items-center justify-center gap-2.5 mb-5">
+            <Badge
+              variant="outline"
+              className="px-3.5 py-1 text-xs font-semibold gap-1.5 rounded-full bg-primary/10 text-primary border-primary/20 shadow-none"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>دليل شبكة التعاقدات الطبية 2026</span>
+            </Badge>
 
-              <Link
-                href="/introduction"
-                className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-full bg-amber-100/90 text-amber-900 border border-amber-300 dark:bg-amber-950/70 dark:text-amber-300 dark:border-amber-800 hover:scale-105 transition-all shadow-sm"
-              >
-                <HeartHandshake className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
-                <span>إشراف وإهداء: أ/ تامر صبحي عبدالله</span>
-                <ChevronLeft className="w-3 h-3" />
-              </Link>
-            </div>
+            <Link
+              href="/introduction"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1 text-xs font-semibold rounded-full bg-muted/80 hover:bg-muted text-muted-foreground hover:text-foreground border border-border transition-all"
+            >
+              <HeartHandshake className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+              <span>إشراف وإهداء: أ/ تامر صبحي</span>
+              <ChevronLeft className="w-3 h-3 text-muted-foreground" />
+            </Link>
 
-            <h1 className="text-2xl sm:text-4xl font-extrabold text-foreground tracking-tight leading-tight">
-              ابحث عن أقرب مستشفى، معمل، أو طبيب معتمد
+            <Link
+              href="/bylaws"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1 text-xs font-semibold rounded-full bg-emerald-500/10 hover:bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/20 transition-all"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span>لائحة الاشتراكات والحدود القصوى 2026</span>
+              <ChevronLeft className="w-3 h-3" />
+            </Link>
+          </div>
+
+          {/* Hero Heading */}
+          <div className="max-w-3xl mx-auto text-center space-y-3 mb-7">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight leading-tight sm:leading-tight">
+              ابحث في شبكة الرعاية الطبية
             </h1>
 
-            <p className="text-xs sm:text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
-              دليل متكامل يضم {initialProvidersCount} منشأة طبية و {initialDoctorsCount} طبيب واستشاري
-              موزعين عبر {initialGovernorates.length} محافظة لخدمة العاملين بمصلحتي الجمارك والضرائب.
+            <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              دليل معتمد يضم أكثر من {initialProvidersCount + initialDoctorsCount} مستشفى، معمل، وعيادة تخصصية لخدمة العاملين بمصلحتي الجمارك والضرائب.
             </p>
-
-            {/* Quick Link to Bylaws */}
-            <div className="pt-1">
-              <Link
-                href="/bylaws"
-                className="inline-flex items-center gap-1.5 text-xs text-emerald-700 dark:text-emerald-400 font-bold hover:underline bg-emerald-50 dark:bg-emerald-950/60 px-3 py-1.5 rounded-xl border border-emerald-200 dark:border-emerald-800"
-              >
-                <BookOpen className="w-3.5 h-3.5" />
-                <span>اطّلع على لائحة الاشتراكات ونسب المساهمة والحدود القصوى للعلاج 2026</span>
-                <ChevronLeft className="w-3.5 h-3.5" />
-              </Link>
-            </div>
           </div>
 
           {/* Search Bar + Mobile Filter Trigger */}
-          <div className="max-w-2xl mx-auto flex items-center gap-2">
-            <SearchBar
-              initialValue={filters.q}
-              onSearch={(val) => updateFilters({ q: val })}
-              isSearching={isLoading}
-            />
+          <div className="max-w-2xl mx-auto space-y-4">
+            <div className="flex items-center gap-2">
+              <div className="flex-1">
+                <SearchBar
+                  initialValue={filters.q}
+                  onSearch={handleSearchChange}
+                  isSearching={isLoading}
+                />
+              </div>
 
-            {/* Mobile Filter Sheet Trigger */}
-            <div className="lg:hidden">
-              <FilterDrawer
-                filters={filters}
-                governorates={initialGovernorates}
-                specialties={initialSpecialties}
-                governorateCounts={initialGovernorateCounts}
-                typeCounts={initialTypeCounts}
-                onFilterChange={updateFilters}
-                onReset={resetFilters}
-                activeCount={activeFiltersCount}
-              />
+              {/* Mobile Filter Sheet Trigger */}
+              <div className="lg:hidden">
+                <FilterDrawer
+                  filters={filters}
+                  governorates={initialGovernorates}
+                  specialties={initialSpecialties}
+                  governorateCounts={initialGovernorateCounts}
+                  typeCounts={initialTypeCounts}
+                  onFilterChange={updateFilters}
+                  onReset={resetFilters}
+                  activeCount={activeFiltersCount}
+                />
+              </div>
             </div>
+
+            {/* Quick Facility Category Pills */}
+            {filters.tab !== "doctors" && (
+              <div className="pt-1">
+                <StatsBanner
+                  selectedType={filters.type}
+                  onSelectType={(t) => updateFilters({ type: t })}
+                  typeCounts={initialTypeCounts}
+                />
+              </div>
+            )}
           </div>
 
-          {/* Quick Filter Facility Chips Banner */}
-          {filters.tab !== "doctors" && (
-            <div className="max-w-5xl mx-auto mt-4">
-              <StatsBanner
-                selectedType={filters.type}
-                onSelectType={(t) => updateFilters({ type: t })}
-                typeCounts={initialTypeCounts}
-              />
-            </div>
-          )}
         </div>
       </section>
 
       {/* Main Content Area */}
       <main className="container max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
           {/* Desktop Filter Sidebar (3 cols on lg) */}
-          <div className="hidden lg:block lg:col-span-3 sticky top-20 p-5 rounded-2xl border bg-card/60 shadow-sm">
+          <div className="hidden lg:block lg:col-span-3 sticky top-22 p-5 rounded-2xl border bg-card/80 backdrop-blur shadow-sm">
             <FilterSidebar
               filters={filters}
               governorates={initialGovernorates}
@@ -203,8 +237,10 @@ export function AggregatorView({
 
           {/* Content Section (9 cols on lg) */}
           <div className="lg:col-span-9 space-y-6">
+            
             {/* Top Tabs & Result Counters */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/80">
+              
               {/* Category Tabs */}
               <Tabs
                 value={filters.tab}
@@ -213,18 +249,18 @@ export function AggregatorView({
                 }
                 className="w-full sm:w-auto"
               >
-                <TabsList className="w-full sm:w-auto bg-muted/70">
-                  <TabsTrigger value="all" className="text-xs sm:text-sm">
+                <TabsList className="w-full sm:w-auto bg-muted/60 p-1 rounded-xl h-11">
+                  <TabsTrigger value="all" className="rounded-lg text-xs sm:text-sm font-semibold">
                     <Layers className="w-4 h-4 ml-1.5" />
                     <span>الكل ({initialProvidersCount + initialDoctorsCount})</span>
                   </TabsTrigger>
 
-                  <TabsTrigger value="providers" className="text-xs sm:text-sm">
+                  <TabsTrigger value="providers" className="rounded-lg text-xs sm:text-sm font-semibold">
                     <Building2 className="w-4 h-4 ml-1.5 text-primary" />
                     <span>المنشآت ({initialProvidersCount})</span>
                   </TabsTrigger>
 
-                  <TabsTrigger value="doctors" className="text-xs sm:text-sm">
+                  <TabsTrigger value="doctors" className="rounded-lg text-xs sm:text-sm font-semibold">
                     <User className="w-4 h-4 ml-1.5 text-indigo-600 dark:text-indigo-400" />
                     <span>الأطباء ({initialDoctorsCount})</span>
                   </TabsTrigger>
@@ -232,9 +268,9 @@ export function AggregatorView({
               </Tabs>
 
               {/* Result Count Indicator */}
-              <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-muted-foreground self-end sm:self-center">
+              <div className="flex items-center gap-2 text-xs sm:text-sm font-medium text-muted-foreground self-end sm:self-center">
                 <span>النتائج المعروضة:</span>
-                <Badge variant="secondary" className="font-mono text-xs px-2.5 py-0.5">
+                <Badge variant="secondary" className="font-mono text-xs px-2.5 py-0.5 rounded-full font-bold">
                   {totalActiveItems} نتيجة
                 </Badge>
               </div>
@@ -254,16 +290,17 @@ export function AggregatorView({
               {filters.tab === "all" ? (
                 <>
                   {providers.length > 0 && (
-                    <section className="space-y-3">
-                      <div className="flex items-center justify-between">
+                    <section className="space-y-4">
+                      <div className="flex items-center justify-between pb-1 border-b border-border/50">
                         <h2 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
                           <Building2 className="w-5 h-5 text-primary" />
                           <span>المنشآت الطبية والمستشفيات</span>
-                          <Badge variant="outline" className="text-xs font-mono">
-                            {providersCount}
-                          </Badge>
                         </h2>
+                        <Badge variant="outline" className="text-xs font-mono font-bold">
+                          {providersCount} منشأة
+                        </Badge>
                       </div>
+
                       <ProviderList
                         providers={providers}
                         isLoading={isLoading}
@@ -274,16 +311,17 @@ export function AggregatorView({
                   )}
 
                   {doctors.length > 0 && (
-                    <section className="space-y-3 pt-6 border-t">
-                      <div className="flex items-center justify-between">
+                    <section className="space-y-4 pt-4">
+                      <div className="flex items-center justify-between pb-1 border-b border-border/50">
                         <h2 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
                           <User className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                           <span>الأطباء والعيادات التخصصية</span>
-                          <Badge variant="outline" className="text-xs font-mono">
-                            {doctorsCount}
-                          </Badge>
                         </h2>
+                        <Badge variant="outline" className="text-xs font-mono font-bold">
+                          {doctorsCount} طبيب
+                        </Badge>
                       </div>
+
                       <DoctorList
                         doctors={doctors}
                         isLoading={isLoading}
@@ -321,14 +359,16 @@ export function AggregatorView({
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <PaginationControls
-                currentPage={filters.page}
-                totalPages={totalPages}
-                totalItems={currentTotalForPagination}
-                pageSize={pageSize}
-                onPageChange={(p) => updateFilters({ page: p }, false)}
-                isPending={isLoading}
-              />
+              <div className="pt-4">
+                <PaginationControls
+                  currentPage={filters.page}
+                  totalPages={totalPages}
+                  totalItems={currentTotalForPagination}
+                  pageSize={pageSize}
+                  onPageChange={(p) => updateFilters({ page: p }, false)}
+                  isPending={isLoading}
+                />
+              </div>
             )}
           </div>
         </div>
@@ -339,7 +379,6 @@ export function AggregatorView({
         activeTab={filters.tab}
         onTabChange={(tab) => updateFilters({ tab })}
         onOpenFilter={() => {
-          // Open mobile filter sheet
           const trigger = document.querySelector('[data-state="closed"]') as HTMLElement;
           trigger?.click();
         }}
@@ -348,3 +387,4 @@ export function AggregatorView({
     </div>
   );
 }
+

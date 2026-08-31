@@ -26,6 +26,18 @@ export function normalizeArabic(text: string): string {
     .toLowerCase();
 }
 
+/**
+ * Sanitizes input string to prevent PostgREST / Supabase filter syntax crashes
+ * (strips special characters like commas, parentheses, quotes, percent signs, brackets)
+ */
+export function sanitizeSearchQuery(query: string): string {
+  if (!query) return "";
+  return query
+    .replace(/[,()"'%\\<>{}[\]]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export interface ProviderTypeMeta {
   labelAr: string;
   labelEn: string;

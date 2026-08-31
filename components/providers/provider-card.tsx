@@ -32,21 +32,21 @@ export function ProviderCard({ provider, onSelect }: ProviderCardProps) {
     <>
       <Card
         onClick={() => onSelect?.(provider)}
-        className="group relative cursor-pointer flex flex-col justify-between hover:shadow-md hover:border-primary/40 border-border/80 transition-all duration-200 bg-card overflow-hidden"
+        className="group relative cursor-pointer flex flex-col justify-between hover:shadow-lg hover:border-primary/50 border-border/80 hover:-translate-y-0.5 transition-all duration-200 bg-card rounded-2xl overflow-hidden"
       >
-        <CardHeader className="pb-3 space-y-2">
+        <CardHeader className="pb-3 space-y-2.5">
           {/* Header Badges */}
           <div className="flex items-center justify-between gap-2">
             {typeMeta ? (
               <Badge
                 variant="secondary"
-                className={`text-[11px] font-medium gap-1 py-0.5 px-2.5 ${typeMeta.badgeClass}`}
+                className={`text-[11px] font-bold gap-1 py-0.5 px-2.5 rounded-full ${typeMeta.badgeClass}`}
               >
                 <span>{typeMeta.emoji}</span>
                 <span>{typeMeta.labelAr}</span>
               </Badge>
             ) : (
-              <Badge variant="outline" className="text-[11px]">
+              <Badge variant="outline" className="text-[11px] rounded-full">
                 منشأة طبية
               </Badge>
             )}
@@ -54,9 +54,9 @@ export function ProviderCard({ provider, onSelect }: ProviderCardProps) {
             {provider.governorates?.name_ar && (
               <Badge
                 variant="outline"
-                className="text-[11px] font-medium text-muted-foreground border-border gap-1 bg-muted/30"
+                className="text-[11px] font-semibold text-muted-foreground border-border gap-1 bg-muted/40 rounded-full"
               >
-                <MapPin className="w-3 h-3 text-emerald-600" />
+                <MapPin className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                 <span>{provider.governorates.name_ar}</span>
               </Badge>
             )}

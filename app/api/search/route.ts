@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/lib/supabase/types";
+import { sanitizeSearchQuery } from "@/lib/utils";
 
 const supabase = createClient<Database>(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -11,7 +12,8 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const tab = searchParams.get("tab") || "all";
-    const q = searchParams.get("q") || "";
+    const rawQ = searchParams.get("q") || "";
+    const safeQ = sanitizeSearchQuery(rawQ);
     const gov = searchParams.get("gov") || "";
     const type = searchParams.get("type") || "";
     const specialty = searchParams.get("specialty") || "";
@@ -36,11 +38,14 @@ export async function GET(request: NextRequest) {
         query = query.eq("provider_type", type as any);
       }
       if (specialty) {
-        query = query.ilike("specialty_ar", `%${specialty}%`);
+        const safeSpec = sanitizeSearchQuery(specialty);
+        if (safeSpec) {
+          query = query.ilike("specialty_ar", `%${safeSpec}%`);
+        }
       }
-      if (q) {
+      if (safeQ) {
         query = query.or(
-          `name_ar.ilike.%${q}%,specialty_ar.ilike.%${q}%,address_ar.ilike.%${q}%,phones.ilike.%${q}%,notes_ar.ilike.%${q}%`
+          `name_ar.ilike.%${safeQ}%,specialty_ar.ilike.%${safeQ}%,address_ar.ilike.%${safeQ}%,phones.ilike.%${safeQ}%,notes_ar.ilike.%${safeQ}%`
         );
       }
 
@@ -59,11 +64,14 @@ export async function GET(request: NextRequest) {
           query = query.eq("governorate_id", parseInt(gov, 10));
         }
         if (specialty) {
-          query = query.ilike("specialty_ar", `%${specialty}%`);
+          const safeSpec = sanitizeSearchQuery(specialty);
+          if (safeSpec) {
+            query = query.ilike("specialty_ar", `%${safeSpec}%`);
+          }
         }
-        if (q) {
+        if (safeQ) {
           query = query.or(
-            `doctor_name_ar.ilike.%${q}%,specialty_ar.ilike.%${q}%,address_ar.ilike.%${q}%,phones.ilike.%${q}%,notes_ar.ilike.%${q}%`
+            `doctor_name_ar.ilike.%${safeQ}%,specialty_ar.ilike.%${safeQ}%,address_ar.ilike.%${safeQ}%,phones.ilike.%${safeQ}%,notes_ar.ilike.%${safeQ}%`
           );
         }
 
@@ -84,9 +92,10 @@ export async function GET(request: NextRequest) {
       doctorsCount: doctorsRes?.count || 0,
     });
   } catch (err: any) {
+    console.error("API search error:", err);
     return NextResponse.json(
-      { error: err.message || "Failed to search" },
-      { status: 500 }
+      { providers: [], providersCount: 0, doctors: [], doctorsCount: 0, error: err.message || "Failed to search" },
+      { status: 200 }
     );
   }
 }

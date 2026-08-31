@@ -1,6 +1,7 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { Navbar } from "@/components/layout/navbar";
 import { AggregatorView } from "@/components/search/aggregator-view";
+import { sanitizeSearchQuery } from "@/lib/utils";
 import {
   Governorate,
   ProviderWithGovernorate,
@@ -42,6 +43,9 @@ export default async function HomePage({ searchParams }: PageProps) {
 
   const governorates: Governorate[] = governoratesData || [];
 
+  const safeQ = sanitizeSearchQuery(q);
+  const safeSpecialty = sanitizeSearchQuery(specialty);
+
   // 2. Fetch Initial Providers
   let providersQuery = supabase
     .from("providers")
@@ -53,12 +57,12 @@ export default async function HomePage({ searchParams }: PageProps) {
   if (type) {
     providersQuery = providersQuery.eq("provider_type", type as any);
   }
-  if (specialty) {
-    providersQuery = providersQuery.ilike("specialty_ar", `%${specialty}%`);
+  if (safeSpecialty) {
+    providersQuery = providersQuery.ilike("specialty_ar", `%${safeSpecialty}%`);
   }
-  if (q) {
+  if (safeQ) {
     providersQuery = providersQuery.or(
-      `name_ar.ilike.%${q}%,specialty_ar.ilike.%${q}%,address_ar.ilike.%${q}%,phones.ilike.%${q}%,notes_ar.ilike.%${q}%`
+      `name_ar.ilike.%${safeQ}%,specialty_ar.ilike.%${safeQ}%,address_ar.ilike.%${safeQ}%,phones.ilike.%${safeQ}%,notes_ar.ilike.%${safeQ}%`
     );
   }
 
@@ -72,12 +76,12 @@ export default async function HomePage({ searchParams }: PageProps) {
   if (gov) {
     doctorsQuery = doctorsQuery.eq("governorate_id", parseInt(gov, 10));
   }
-  if (specialty) {
-    doctorsQuery = doctorsQuery.ilike("specialty_ar", `%${specialty}%`);
+  if (safeSpecialty) {
+    doctorsQuery = doctorsQuery.ilike("specialty_ar", `%${safeSpecialty}%`);
   }
-  if (q) {
+  if (safeQ) {
     doctorsQuery = doctorsQuery.or(
-      `doctor_name_ar.ilike.%${q}%,specialty_ar.ilike.%${q}%,address_ar.ilike.%${q}%,phones.ilike.%${q}%,notes_ar.ilike.%${q}%`
+      `doctor_name_ar.ilike.%${safeQ}%,specialty_ar.ilike.%${safeQ}%,address_ar.ilike.%${safeQ}%,phones.ilike.%${safeQ}%,notes_ar.ilike.%${safeQ}%`
     );
   }
 
