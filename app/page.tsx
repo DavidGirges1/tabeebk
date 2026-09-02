@@ -153,11 +153,8 @@ export default async function HomePage({ searchParams }: PageProps) {
       (governorateCounts[r.governorate_id] || 0) + 1;
   });
 
-  // Compute unique normalized specialties for filters
-  const specialtiesSet = new Set<string>();
-  MEDICAL_SPECIALTIES.forEach((s) => specialtiesSet.add(s));
-  CANONICAL_SPECIALTIES.forEach((s) => specialtiesSet.add(s));
-  const initialSpecialties = Array.from(specialtiesSet).sort((a, b) => a.localeCompare(b, "ar"));
+  // Unified medical specialties for filters (no duplicates)
+  const initialSpecialties = [...MEDICAL_SPECIALTIES].sort((a, b) => a.localeCompare(b, "ar"));
 
   const allDoctorsList = (allDoctorsSpecsResult.data as { specialty_ar: string | null; governorate_id: number }[]) || [];
 
