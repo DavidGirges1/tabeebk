@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/lib/supabase/types";
 import { sanitizeSearchQuery } from "@/lib/utils";
+import { getSpecialtyFilterQueries } from "@/lib/constants/specialties";
 
 const supabase = createClient<Database>(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -26,6 +27,7 @@ export async function GET(request: NextRequest) {
     let providersPromise = null;
     let doctorsPromise = null;
 
+    // 1. Query Providers (Facilities)
     if (tab === "all" || tab === "providers") {
       let query = supabase
         .from("providers")
@@ -37,10 +39,17 @@ export async function GET(request: NextRequest) {
       if (type) {
         query = query.eq("provider_type", type as any);
       }
-      if (specialty) {
+      // Note: specialty filter is only for doctors, never leaks into providers tab
+      if (tab === "all" && specialty) {
         const safeSpec = sanitizeSearchQuery(specialty);
         if (safeSpec) {
-          query = query.ilike("specialty_ar", `%${safeSpec}%`);
+          const specQueries = getSpecialtyFilterQueries(safeSpec);
+          const orClauses = specQueries
+            .map((sq) => `specialty_ar.ilike.%${sq}%,name_ar.ilike.%${sq}%,notes_ar.ilike.%${sq}%`)
+            .join(",");
+          if (orClauses) {
+            query = query.or(orClauses);
+          }
         }
       }
       if (safeQ) {
@@ -53,8 +62,9 @@ export async function GET(request: NextRequest) {
       providersPromise = query;
     }
 
+    // 2. Query Doctors
     if (tab === "all" || tab === "doctors") {
-      // If type filter is selected (which only belongs to facilities), skip doctors when in 'all' mode
+      // If facility type filter is selected, skip doctors when in 'all' mode
       if (!type) {
         let query = supabase
           .from("doctors")
@@ -66,7 +76,16 @@ export async function GET(request: NextRequest) {
         if (specialty) {
           const safeSpec = sanitizeSearchQuery(specialty);
           if (safeSpec) {
-            query = query.ilike("specialty_ar", `%${safeSpec}%`);
+            const specQueries = getSpecialtyFilterQueries(safeSpec);
+            const orClauses = specQueries
+              .map(
+                (sq) =>
+                  `specialty_ar.ilike.%${sq}%,doctor_name_ar.ilike.%${sq}%,notes_ar.ilike.%${sq}%`
+              )
+              .join(",");
+            if (orClauses) {
+              query = query.or(orClauses);
+            }
           }
         }
         if (safeQ) {

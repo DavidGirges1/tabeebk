@@ -30,8 +30,10 @@ interface AggregatorViewProps {
   initialGovernorates: Governorate[];
   initialProviders: ProviderWithGovernorate[];
   initialProvidersCount: number;
+  totalProvidersCount?: number;
   initialDoctors: DoctorWithGovernorate[];
   initialDoctorsCount: number;
+  totalDoctorsCount?: number;
   initialGovernorateCounts: Record<number, number>;
   initialTypeCounts: Record<string, number>;
   initialSpecialties: string[];
@@ -41,8 +43,10 @@ export function AggregatorView({
   initialGovernorates,
   initialProviders,
   initialProvidersCount,
+  totalProvidersCount,
   initialDoctors,
   initialDoctorsCount,
+  totalDoctorsCount,
   initialGovernorateCounts,
   initialTypeCounts,
   initialSpecialties,
@@ -56,6 +60,9 @@ export function AggregatorView({
   const [doctorsCount, setDoctorsCount] = useState<number>(initialDoctorsCount);
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState<boolean>(false);
+
+  const displayTotalProviders = totalProvidersCount ?? initialProvidersCount;
+  const displayTotalDoctors = totalDoctorsCount ?? initialDoctorsCount;
 
   // Sync / fetch data with AbortController to prevent race conditions and fast typing crashes
   useEffect(() => {
@@ -263,17 +270,17 @@ export function AggregatorView({
                 <TabsList className="w-full sm:w-auto bg-muted/60 p-1 rounded-xl h-11">
                   <TabsTrigger value="all" className="rounded-lg text-xs sm:text-sm font-semibold">
                     <Layers className="w-4 h-4 ml-1.5" />
-                    <span>الكل ({initialProvidersCount + initialDoctorsCount})</span>
+                    <span>الكل ({displayTotalProviders + displayTotalDoctors})</span>
                   </TabsTrigger>
 
                   <TabsTrigger value="providers" className="rounded-lg text-xs sm:text-sm font-semibold">
                     <Building2 className="w-4 h-4 ml-1.5 text-primary" />
-                    <span>المنشآت ({initialProvidersCount})</span>
+                    <span>المنشآت ({displayTotalProviders})</span>
                   </TabsTrigger>
 
                   <TabsTrigger value="doctors" className="rounded-lg text-xs sm:text-sm font-semibold">
                     <User className="w-4 h-4 ml-1.5 text-indigo-600 dark:text-indigo-400" />
-                    <span>الأطباء ({initialDoctorsCount})</span>
+                    <span>الأطباء ({displayTotalDoctors})</span>
                   </TabsTrigger>
                 </TabsList>
               </Tabs>

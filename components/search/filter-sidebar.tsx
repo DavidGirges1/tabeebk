@@ -217,13 +217,13 @@ export function FilterSidebar({
         </div>
       </div>
 
-      {/* Specialties */}
-      {specialties.length > 0 && (
-        <div className="space-y-3 pt-3 border-t border-border/70">
+      {/* Specialties - Only visible on Doctors tab or All tab (hidden on Facilities tab) */}
+      {filters.tab !== "providers" && specialties.length > 0 && (
+        <div className="space-y-3 pt-3 border-t border-border/70" data-testid="specialty-filter-section">
           <div className="flex items-center justify-between">
             <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
               <Stethoscope className="w-3.5 h-3.5 text-primary" />
-              التخصص
+              {filters.tab === "doctors" ? "التخصص الطبي" : "تخصص الأطباء"}
             </h4>
             {filters.specialty && (
               <button

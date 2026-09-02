@@ -212,8 +212,8 @@ export function ProviderModal({ provider, isOpen, onClose }: ProviderModalProps)
               </div>
             </div>
           ) : (
-            <div className="p-3.5 rounded-xl bg-muted/30 border text-xs text-muted-foreground text-center">
-              لا توجد أرقام هواتف مسجلة لهذه المنشأة
+            <div className="p-3.5 rounded-xl bg-muted/30 border text-xs text-muted-foreground text-center font-medium">
+              الهاتف غير متاح
             </div>
           )}
 

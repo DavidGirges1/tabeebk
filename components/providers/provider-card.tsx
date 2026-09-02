@@ -158,7 +158,7 @@ export function ProviderCard({ provider, onSelect }: ProviderCardProps) {
               </span>
             </Button>
           ) : (
-            <span className="text-[11px] text-muted-foreground">لا يوجد هاتف</span>
+            <span className="text-[11px] text-muted-foreground font-medium">الهاتف غير متاح</span>
           )}
 
           <Button

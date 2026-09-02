@@ -31,8 +31,26 @@ export function useFilters() {
     (newFilters: Partial<FilterState>, resetPage = true) => {
       const params = new URLSearchParams(searchParams.toString());
 
+      // Tab-specific filter cleanup:
+      // When switching to providers, clean up specialty so it never leaks silently
+      // When switching to doctors, clean up facility type
+      if (newFilters.tab) {
+        if (newFilters.tab === "providers") {
+          newFilters.specialty = "";
+          params.delete("specialty");
+        } else if (newFilters.tab === "doctors") {
+          newFilters.type = "";
+          params.delete("type");
+        }
+      }
+
       Object.entries(newFilters).forEach(([key, value]) => {
-        if (value === undefined || value === null || value === "" || (key === "tab" && value === "all")) {
+        if (
+          value === undefined ||
+          value === null ||
+          value === "" ||
+          (key === "tab" && value === "all")
+        ) {
           params.delete(key);
         } else {
           params.set(key, String(value));

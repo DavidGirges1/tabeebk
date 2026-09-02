@@ -14,6 +14,7 @@ import { DoctorWithGovernorate } from "@/lib/supabase/types";
 import { parsePhones, formatTelLink, getGoogleMapsUrl } from "@/lib/utils";
 import { MapPin, Phone, Stethoscope, Copy, Check, FileText, Share2, User } from "lucide-react";
 import { GoogleMapsIcon } from "@/components/common/google-maps-icon";
+import { parseDoctorTitleAndSpecialty } from "@/lib/constants/specialties";
 
 interface DoctorModalProps {
   doctor: DoctorWithGovernorate | null;
@@ -28,6 +29,11 @@ export function DoctorModal({ doctor, isOpen, onClose }: DoctorModalProps) {
   if (!doctor) return null;
 
   const phones = parsePhones(doctor.phones);
+  const parsedDoctor = parseDoctorTitleAndSpecialty(
+    doctor.doctor_name_ar,
+    doctor.specialty_ar,
+    doctor.notes_ar
+  );
 
   const handleCopyAddress = async () => {
     if (!doctor.address_ar) return;
@@ -51,11 +57,11 @@ export function DoctorModal({ doctor, isOpen, onClose }: DoctorModalProps) {
   };
 
   const handleShare = async () => {
-    const shareText = `${doctor.doctor_name_ar}\nالتخصص: ${doctor.specialty_ar || ""}\n${doctor.governorates?.name_ar || ""}\nالعنوان: ${doctor.address_ar || "غير متوفر"}\nالهاتف: ${doctor.phones || "غير متوفر"}`;
+    const shareText = `${parsedDoctor.displayName}\nاللقب: ${parsedDoctor.title}\nالتخصص: ${parsedDoctor.specialty || ""}\n${doctor.governorates?.name_ar || ""}\nالعنوان: ${doctor.address_ar || "غير متوفر"}\nالهاتف: ${phones.join(" / ") || "غير متوفر"}`;
     if (navigator.share) {
       try {
         await navigator.share({
-          title: doctor.doctor_name_ar,
+          title: parsedDoctor.displayName,
           text: shareText,
         });
       } catch (e) {
@@ -78,13 +84,17 @@ export function DoctorModal({ doctor, isOpen, onClose }: DoctorModalProps) {
               </div>
               <div>
                 <DialogTitle className="text-lg sm:text-xl font-bold leading-tight">
-                  {doctor.doctor_name_ar}
+                  {parsedDoctor.displayName}
                 </DialogTitle>
                 <div className="flex flex-wrap items-center gap-2 mt-1.5">
-                  {doctor.specialty_ar && (
+                  <Badge variant="secondary" className="text-xs bg-indigo-50 text-indigo-800 border-indigo-200 dark:bg-indigo-950 dark:text-indigo-300">
+                    <User className="w-3 h-3 ml-1" />
+                    {parsedDoctor.title}
+                  </Badge>
+                  {parsedDoctor.specialty && (
                     <Badge variant="secondary" className="text-xs bg-indigo-100 text-indigo-800 border-indigo-200 dark:bg-indigo-950 dark:text-indigo-300">
                       <Stethoscope className="w-3 h-3 ml-1" />
-                      {doctor.specialty_ar}
+                      {parsedDoctor.specialty}
                     </Badge>
                   )}
                   {doctor.governorates?.name_ar && (
@@ -199,8 +209,8 @@ export function DoctorModal({ doctor, isOpen, onClose }: DoctorModalProps) {
               </div>
             </div>
           ) : (
-            <div className="p-3.5 rounded-xl bg-muted/30 border text-xs text-muted-foreground text-center">
-              لا توجد أرقام هواتف مسجلة
+            <div className="p-3.5 rounded-xl bg-muted/30 border text-xs text-muted-foreground text-center font-medium" data-testid="doctor-no-phone">
+              الهاتف غير متاح
             </div>
           )}
 

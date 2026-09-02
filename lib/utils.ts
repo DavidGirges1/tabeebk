@@ -99,14 +99,77 @@ export const PROVIDER_TYPES_MAP: Record<ProviderTypeEnum, ProviderTypeMeta> = {
 };
 
 /**
- * Splits concatenated phone numbers into an array of clean phone strings.
+ * Validates whether a phone string matches realistic Egyptian phone patterns:
+ * - Mobile: 010, 011, 012, 015 followed by 8 digits (11 digits total)
+ * - Landlines: Area code (02, 03, 013, 040, 045, 047, 048, 050, 055, 057, 062, 064, 065, 066, 068, 069, 082, 084, 086, 088, 092, 093, 095, 096, 097) + 7 to 8 digits
+ * - Hotlines: 5 digits (15xxx, 16xxx, 19xxx)
+ */
+export function isValidEgyptianPhone(phone: string): boolean {
+  if (!phone || typeof phone !== "string") return false;
+  // Clean whitespace, dashes, parentheses
+  const cleaned = phone.replace(/[\s\-_()]+/g, "");
+  
+  // Reject pure placeholder texts
+  if (
+    /^(لا\s*يوجد|غير\s*متاح|غير\s*متوفر|بدون|أرقام|\d+\s*أرقام|null|undefined|none|n\/a|—|-+)$/i.test(
+      phone.trim()
+    )
+  ) {
+    return false;
+  }
+
+  // Extract digits
+  const digits = cleaned.replace(/[^\d+]/g, "");
+  if (!digits || digits.length < 5) return false;
+
+  const normalized = digits.startsWith("+20")
+    ? "0" + digits.slice(3)
+    : digits.startsWith("20") && digits.length >= 11
+    ? "0" + digits.slice(2)
+    : digits;
+
+  // Mobile check: 01[0125] + 8 digits = 11 digits
+  if (/^01[0125]\d{8}$/.test(normalized)) return true;
+
+  // Cairo/Giza: 02 + 8 digits = 10 digits
+  if (/^02\d{8}$/.test(normalized)) return true;
+
+  // Alex: 03 + 7 digits = 9 digits
+  if (/^03\d{7}$/.test(normalized)) return true;
+
+  // Other governorate area codes + 7 digits
+  if (/^0(13|40|45|47|48|50|55|57|62|64|65|66|68|69|82|84|86|88|92|93|95|96|97)\d{7}$/.test(normalized)) {
+    return true;
+  }
+
+  // Hotlines (5 digits starting with 15, 16, 19)
+  if (/^1[569]\d{3}$/.test(normalized)) return true;
+
+  // If it's a 7-8 digit local number without area code
+  if (/^\d{7,8}$/.test(normalized)) return true;
+
+  return false;
+}
+
+/**
+ * Splits concatenated phone numbers into an array of clean, validated phone strings.
+ * Filters out raw placeholder strings (e.g. "2 أرقام", "لا يوجد", "-") and invalid numbers.
  */
 export function parsePhones(phonesStr: string | null | undefined): string[] {
   if (!phonesStr) return [];
-  return phonesStr
+  const raw = phonesStr.trim();
+  if (!raw || /^(لا\s*يوجد|غير\s*متاح|غير\s*متوفر|بدون|أرقام|\d+\s*أرقام|null|undefined|none|n\/a|—|-+)$/i.test(raw)) {
+    return [];
+  }
+
+  const parts = raw
     .split(/[\/\n,]+/)
     .map((p) => p.trim())
-    .filter((p) => p.length > 0 && !/^[\s—\-_]+$/.test(p));
+    .filter((p) => p.length > 0 && !/^[\s—\-_]+$/.test(p))
+    .filter((p) => isValidEgyptianPhone(p));
+
+  // Deduplicate
+  return Array.from(new Set(parts));
 }
 
 /**
@@ -123,4 +186,5 @@ export function getGoogleMapsUrl(name: string, address?: string | null): string 
   const query = [name, address].filter(Boolean).join(" ");
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }
+
 

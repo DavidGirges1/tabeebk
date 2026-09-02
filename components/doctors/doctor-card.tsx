@@ -10,6 +10,8 @@ import { parsePhones, formatTelLink, getGoogleMapsUrl } from "@/lib/utils";
 import { PhoneActionSheet } from "@/components/common/phone-action-sheet";
 import { GoogleMapsIcon } from "@/components/common/google-maps-icon";
 
+import { parseDoctorTitleAndSpecialty } from "@/lib/constants/specialties";
+
 interface DoctorCardProps {
   doctor: DoctorWithGovernorate;
   onSelect?: (doctor: DoctorWithGovernorate) => void;
@@ -19,6 +21,11 @@ export function DoctorCard({ doctor, onSelect }: DoctorCardProps) {
   const [showPhoneSheet, setShowPhoneSheet] = useState(false);
   const [copiedAddr, setCopiedAddr] = useState(false);
   const phones = parsePhones(doctor.phones);
+  const parsedDoctor = parseDoctorTitleAndSpecialty(
+    doctor.doctor_name_ar,
+    doctor.specialty_ar,
+    doctor.notes_ar
+  );
 
   const handlePhoneClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -53,9 +60,10 @@ export function DoctorCard({ doctor, onSelect }: DoctorCardProps) {
             <Badge
               variant="secondary"
               className="text-[11px] font-bold gap-1 py-0.5 px-2.5 rounded-full bg-indigo-50 text-indigo-800 border-indigo-200 dark:bg-indigo-950 dark:text-indigo-300 dark:border-indigo-800"
+              data-testid="doctor-title-badge"
             >
               <User className="w-3 h-3" />
-              <span>طبيب / استشاري</span>
+              <span>{parsedDoctor.title}</span>
             </Badge>
 
             {doctor.governorates?.name_ar && (
@@ -71,14 +79,17 @@ export function DoctorCard({ doctor, onSelect }: DoctorCardProps) {
 
           {/* Doctor Name */}
           <CardTitle className="text-base sm:text-lg font-bold group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1">
-            {doctor.doctor_name_ar}
+            {parsedDoctor.displayName}
           </CardTitle>
 
           {/* Specialty */}
-          {doctor.specialty_ar && (
-            <div className="flex items-center gap-1.5 text-xs text-indigo-700 dark:text-indigo-400 font-semibold line-clamp-1">
+          {parsedDoctor.specialty && (
+            <div
+              className="flex items-center gap-1.5 text-xs text-indigo-700 dark:text-indigo-400 font-semibold line-clamp-1"
+              data-testid="doctor-specialty-text"
+            >
               <Stethoscope className="w-3.5 h-3.5 shrink-0" />
-              <span>{doctor.specialty_ar}</span>
+              <span>{parsedDoctor.specialty}</span>
             </div>
           )}
         </CardHeader>
@@ -151,7 +162,9 @@ export function DoctorCard({ doctor, onSelect }: DoctorCardProps) {
               </span>
             </Button>
           ) : (
-            <span className="text-[11px] text-muted-foreground">لا يوجد هاتف</span>
+            <span className="text-[11px] text-muted-foreground font-medium">
+              الهاتف غير متاح
+            </span>
           )}
 
           <Button
