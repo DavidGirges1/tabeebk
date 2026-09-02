@@ -175,14 +175,10 @@ export function AggregatorView({
           </div>
 
           {/* Hero Heading */}
-          <div className="max-w-3xl mx-auto text-center space-y-3 mb-7">
+          <div className="max-w-3xl mx-auto text-center mb-7">
             <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight leading-tight sm:leading-tight">
               ابحث في شبكة الرعاية الطبية
             </h1>
-
-            <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              دليل معتمد يضم أكثر من {initialProvidersCount + initialDoctorsCount} مستشفى، معمل، وعيادة تخصصية لخدمة العاملين بمصلحتي الجمارك والضرائب.
-            </p>
           </div>
 
           {/* Search Bar + Mobile Filter Trigger */}
