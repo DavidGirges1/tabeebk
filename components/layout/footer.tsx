@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { HeartPulse, HeartHandshake, ShieldCheck, Code, Sparkles, Building2, User, BookOpen } from "lucide-react";
+import { HeartPulse, HeartHandshake, ShieldCheck, Code, Sparkles, Building2, User, BookOpen, Lock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export function Footer() {
@@ -134,9 +134,19 @@ export function Footer() {
 
         {/* Bottom Bar & Credits */}
         <div className="pt-8 mt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
-          <p>
-            جميع الحقوق محفوظة © 2026 صندوق الرعاية الصحية والاجتماعية للعاملين بمصلحتي الجمارك والضرائب.
-          </p>
+          <div className="flex items-center gap-3 flex-wrap justify-center sm:justify-start">
+            <p>
+              جميع الحقوق محفوظة © 2026 صندوق الرعاية الصحية والاجتماعية للعاملين بمصلحتي الجمارك والضرائب.
+            </p>
+            <Link
+              href="/admin"
+              className="inline-flex items-center gap-1 text-slate-400 hover:text-slate-200 transition-colors text-[11px] font-medium border-r border-slate-700 pr-3 mr-1"
+              title="بوابة الإدارة المركزية"
+            >
+              <Lock className="w-3 h-3" />
+              <span>بوابة الإدارة</span>
+            </Link>
+          </div>
 
           <div className="flex items-center gap-2 bg-slate-800/90 px-3.5 py-1.5 rounded-full border border-slate-700 text-slate-300">
             <Code className="w-4 h-4 text-primary" />

@@ -19,6 +19,8 @@ export default function AdminPage() {
   const [user, setUser] = useState<AdminUser | null>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [activeTab, setActiveTab] = useState<AdminTab>("overview");
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [providerInitialType, setProviderInitialType] = useState<string>("");
 
   // Global Data
   const [stats, setStats] = useState<any | null>(null);
@@ -135,6 +137,7 @@ export default function AdminPage() {
 
       if (res.ok && data.success) {
         addToast("success", isEditing ? "تم حفظ تعديلات بيانات الطبيب بنجاح" : "تمت إضافة الطبيب بنجاح إلى قاعدة البيانات");
+        setRefreshTrigger((prev) => prev + 1);
         fetchDashboardData();
         return true;
       } else {
@@ -180,6 +183,7 @@ export default function AdminPage() {
 
       if (res.ok && data.success) {
         addToast("success", isEditing ? "تم حفظ تعديلات المنشأة بنجاح" : "تمت إضافة المنشأة الطبية بنجاح إلى قاعدة البيانات");
+        setRefreshTrigger((prev) => prev + 1);
         fetchDashboardData();
         return true;
       } else {
@@ -220,6 +224,7 @@ export default function AdminPage() {
         );
         setDeleteModalOpen(false);
         setDeletingItem(null);
+        setRefreshTrigger((prev) => prev + 1);
         fetchDashboardData();
       } else {
         addToast("error", data.error || "فشل في عملية الحذف");
@@ -281,7 +286,14 @@ export default function AdminPage() {
         {activeTab === "overview" && (
           <OverviewTab
             stats={stats}
-            onNavigateTab={setActiveTab}
+            onNavigateTab={(tab) => {
+              if (tab === "providers") setProviderInitialType("");
+              setActiveTab(tab);
+            }}
+            onNavigateToProvidersWithType={(type) => {
+              setProviderInitialType(type);
+              setActiveTab("providers");
+            }}
             onAddNewDoctor={handleOpenAddDoctor}
             onAddNewProvider={handleOpenAddProvider}
           />
@@ -291,6 +303,7 @@ export default function AdminPage() {
         {activeTab === "doctors" && (
           <DoctorsTab
             governorates={governorates}
+            refreshTrigger={refreshTrigger}
             onAddNew={handleOpenAddDoctor}
             onEdit={handleOpenEditDoctor}
             onDelete={handlePromptDeleteDoctor}
@@ -303,6 +316,8 @@ export default function AdminPage() {
         {activeTab === "providers" && (
           <ProvidersTab
             governorates={governorates}
+            refreshTrigger={refreshTrigger}
+            initialType={providerInitialType}
             onAddNew={handleOpenAddProvider}
             onEdit={handleOpenEditProvider}
             onDelete={handlePromptDeleteProvider}

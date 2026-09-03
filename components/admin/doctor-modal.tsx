@@ -32,7 +32,8 @@ export function DoctorModal({
   initialData,
   governorates,
 }: DoctorModalProps) {
-  const isEditing = !!initialData?.id;
+  const [isEditing, setIsEditing] = useState(false);
+  const [isCustomSpecialty, setIsCustomSpecialty] = useState(false);
 
   const [doctorName, setDoctorName] = useState("");
   const [governorateId, setGovernorateId] = useState<number | string>("");
@@ -43,18 +44,35 @@ export function DoctorModal({
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !isLoading) {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, isLoading, onClose]);
+
   useEffect(() => {
     if (initialData) {
+      setIsEditing(true);
       setDoctorName(initialData.doctor_name_ar || "");
       setGovernorateId(initialData.governorate_id || (governorates[0]?.id ?? ""));
-      setSpecialty(initialData.specialty_ar || "");
+      const spec = initialData.specialty_ar || "";
+      setSpecialty(spec);
+      setIsCustomSpecialty(!!spec && !MEDICAL_SPECIALTIES.includes(spec as any));
       setAddress(initialData.address_ar || "");
       setPhones(initialData.phones || "");
       setNotes(initialData.notes_ar || "");
     } else {
+      setIsEditing(false);
       setDoctorName("");
       setGovernorateId(governorates[0]?.id || "");
       setSpecialty("");
+      setIsCustomSpecialty(false);
       setAddress("");
       setPhones("");
       setNotes("");
@@ -73,7 +91,8 @@ export function DoctorModal({
       return;
     }
 
-    if (!governorateId) {
+    const finalGovId = governorateId || governorates[0]?.id;
+    if (!finalGovId) {
       setErrorMsg("يرجى اختيار المحافظة");
       return;
     }
@@ -84,7 +103,7 @@ export function DoctorModal({
       const payload = {
         id: initialData?.id,
         doctor_name_ar: doctorName.trim(),
-        governorate_id: parseInt(String(governorateId), 10),
+        governorate_id: parseInt(String(finalGovId), 10),
         specialty_ar: specialty.trim() || null,
         address_ar: address.trim() || null,
         phones: phones.trim() || null,
@@ -166,9 +185,8 @@ export function DoctorModal({
                 <span>المحافظة * :</span>
               </label>
               <select
-                value={governorateId}
+                value={governorateId || (governorates[0]?.id ?? "")}
                 onChange={(e) => setGovernorateId(e.target.value)}
-                required
                 className="w-full h-12 px-3.5 rounded-xl border border-input bg-muted/40 text-base font-semibold focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
               >
                 {governorates.map((gov) => (
@@ -179,27 +197,47 @@ export function DoctorModal({
               </select>
             </div>
 
-            {/* Specialty Dropdown */}
+            {/* Specialty Field (Select or Custom Text) */}
             <div className="space-y-1.5">
-              <label className="text-sm font-bold text-foreground flex items-center gap-1.5">
-                <Stethoscope className="w-4 h-4 text-primary" />
-                <span>التخصص الطبي (مطابق لقاعدة البيانات والفلاتر) :</span>
-              </label>
-              <select
-                value={specialty}
-                onChange={(e) => setSpecialty(e.target.value)}
-                className="w-full h-12 px-3.5 rounded-xl border border-input bg-muted/40 text-base font-semibold focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
-              >
-                <option value="">-- اختر التخصص الطبي --</option>
-                {specialty && !MEDICAL_SPECIALTIES.includes(specialty as any) && (
-                  <option value={specialty}>{specialty} (مسجل حالياً)</option>
-                )}
-                {MEDICAL_SPECIALTIES.map((spec) => (
-                  <option key={spec} value={spec}>
-                    {spec}
-                  </option>
-                ))}
-              </select>
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-bold text-foreground flex items-center gap-1.5">
+                  <Stethoscope className="w-4 h-4 text-primary" />
+                  <span>التخصص الطبي :</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setIsCustomSpecialty(!isCustomSpecialty)}
+                  className="text-xs font-bold text-primary hover:underline"
+                >
+                  {isCustomSpecialty ? "اختر من القائمة" : "أو كتابة تخصص مخصص"}
+                </button>
+              </div>
+
+              {isCustomSpecialty ? (
+                <Input
+                  type="text"
+                  value={specialty}
+                  onChange={(e) => setSpecialty(e.target.value)}
+                  placeholder="اكتب التخصص الطبي بالتفصيل..."
+                  className="h-12 text-base font-semibold rounded-xl bg-muted/40"
+                />
+              ) : (
+                <select
+                  value={specialty}
+                  onChange={(e) => setSpecialty(e.target.value)}
+                  className="w-full h-12 px-3.5 rounded-xl border border-input bg-muted/40 text-base font-semibold focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+                >
+                  <option value="">-- اختر التخصص الطبي --</option>
+                  {specialty && !MEDICAL_SPECIALTIES.includes(specialty as any) && (
+                    <option value={specialty}>{specialty} (مسجل حالياً)</option>
+                  )}
+                  {MEDICAL_SPECIALTIES.map((spec) => (
+                    <option key={spec} value={spec}>
+                      {spec}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
           </div>
 
@@ -214,7 +252,10 @@ export function DoctorModal({
                 <button
                   key={spec}
                   type="button"
-                  onClick={() => setSpecialty(spec)}
+                  onClick={() => {
+                    setSpecialty(spec);
+                    setIsCustomSpecialty(false);
+                  }}
                   className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${
                     specialty === spec
                       ? "bg-primary text-primary-foreground border-primary font-bold shadow-sm"

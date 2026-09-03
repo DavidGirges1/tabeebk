@@ -29,6 +29,8 @@ interface ProvidersTabProps {
   onDelete: (provider: ProviderWithGovernorate) => void;
   toastSuccess: (msg: string) => void;
   toastError: (msg: string) => void;
+  refreshTrigger?: number;
+  initialType?: string;
 }
 
 const FACILITY_TYPES: { id: string; label: string; emoji: string }[] = [
@@ -49,6 +51,8 @@ export function ProvidersTab({
   onDelete,
   toastSuccess,
   toastError,
+  refreshTrigger = 0,
+  initialType = "",
 }: ProvidersTabProps) {
   const [providers, setProviders] = useState<ProviderWithGovernorate[]>([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -56,7 +60,7 @@ export function ProvidersTab({
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGov, setSelectedGov] = useState("");
-  const [selectedType, setSelectedType] = useState("");
+  const [selectedType, setSelectedType] = useState(initialType);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchProviders = async () => {
@@ -88,7 +92,7 @@ export function ProvidersTab({
 
   useEffect(() => {
     fetchProviders();
-  }, [page, selectedGov, selectedType]);
+  }, [page, selectedGov, selectedType, refreshTrigger]);
 
   // Debounced search
   useEffect(() => {

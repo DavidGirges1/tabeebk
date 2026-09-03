@@ -59,6 +59,18 @@ export function ProviderModal({
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !isLoading) {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, isLoading, onClose]);
+
   useEffect(() => {
     if (initialData) {
       setName(initialData.name_ar || "");
@@ -91,7 +103,8 @@ export function ProviderModal({
       return;
     }
 
-    if (!governorateId) {
+    const finalGovId = governorateId || governorates[0]?.id;
+    if (!finalGovId) {
       setErrorMsg("يرجى اختيار المحافظة");
       return;
     }
@@ -103,7 +116,7 @@ export function ProviderModal({
         id: initialData?.id,
         name_ar: name.trim(),
         provider_type: providerType,
-        governorate_id: parseInt(String(governorateId), 10),
+        governorate_id: parseInt(String(finalGovId), 10),
         specialty_ar: specialty.trim() || null,
         address_ar: address.trim() || null,
         phones: phones.trim() || null,
@@ -205,9 +218,8 @@ export function ProviderModal({
                 <span>المحافظة * :</span>
               </label>
               <select
-                value={governorateId}
+                value={governorateId || (governorates[0]?.id ?? "")}
                 onChange={(e) => setGovernorateId(e.target.value)}
-                required
                 className="w-full h-12 px-3.5 rounded-xl border border-input bg-muted/40 text-base font-semibold focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
               >
                 {governorates.map((gov) => (

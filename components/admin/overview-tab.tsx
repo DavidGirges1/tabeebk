@@ -37,6 +37,7 @@ interface OverviewTabProps {
     recentDoctors: any[];
   } | null;
   onNavigateTab: (tab: "overview" | "doctors" | "providers" | "governorates") => void;
+  onNavigateToProvidersWithType?: (type: string) => void;
   onAddNewDoctor: () => void;
   onAddNewProvider: () => void;
 }
@@ -44,6 +45,7 @@ interface OverviewTabProps {
 export function OverviewTab({
   stats,
   onNavigateTab,
+  onNavigateToProvidersWithType,
   onAddNewDoctor,
   onAddNewProvider,
 }: OverviewTabProps) {
@@ -246,7 +248,13 @@ export function OverviewTab({
             return (
               <div
                 key={item.type}
-                onClick={() => onNavigateTab("providers")}
+                onClick={() => {
+                  if (onNavigateToProvidersWithType) {
+                    onNavigateToProvidersWithType(item.type);
+                  } else {
+                    onNavigateTab("providers");
+                  }
+                }}
                 className={`cursor-pointer p-4 rounded-2xl border ${item.bg} hover:shadow-md transition-all flex items-center justify-between gap-3`}
               >
                 <div className="flex items-center gap-3">

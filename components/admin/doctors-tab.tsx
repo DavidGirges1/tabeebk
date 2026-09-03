@@ -32,6 +32,7 @@ interface DoctorsTabProps {
   onDelete: (doctor: DoctorWithGovernorate) => void;
   toastSuccess: (msg: string) => void;
   toastError: (msg: string) => void;
+  refreshTrigger?: number;
 }
 
 export function DoctorsTab({
@@ -41,6 +42,7 @@ export function DoctorsTab({
   onDelete,
   toastSuccess,
   toastError,
+  refreshTrigger = 0,
 }: DoctorsTabProps) {
   const [doctors, setDoctors] = useState<DoctorWithGovernorate[]>([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -81,7 +83,7 @@ export function DoctorsTab({
 
   useEffect(() => {
     fetchDoctors();
-  }, [page, selectedGov, selectedSpecialty]);
+  }, [page, selectedGov, selectedSpecialty, refreshTrigger]);
 
   // Debounced search
   useEffect(() => {
