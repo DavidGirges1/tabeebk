@@ -105,22 +105,22 @@ export function ProviderCard({ provider, onSelect }: ProviderCardProps) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md"
+                  className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg"
                   onClick={handleCopyAddress}
                   title={copiedAddr ? "تم النسخ" : "نسخ العنوان"}
                   aria-label="نسخ العنوان"
                 >
                   {copiedAddr ? (
-                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    <Check className="w-4 h-4 text-emerald-600" />
                   ) : (
-                    <Copy className="w-3.5 h-3.5" />
+                    <Copy className="w-4 h-4" />
                   )}
                 </Button>
                 <Button
                   asChild
                   variant="ghost"
                   size="sm"
-                  className="h-6 w-6 p-0 text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-md"
+                  className="h-8 w-8 p-0 text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg"
                   title="البحث في خرائط Google"
                   aria-label="البحث في خرائط Google"
                 >
@@ -130,7 +130,7 @@ export function ProviderCard({ provider, onSelect }: ProviderCardProps) {
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <GoogleMapsIcon className="w-3.5 h-3.5" />
+                    <GoogleMapsIcon className="w-4 h-4" />
                   </a>
                 </Button>
               </div>
@@ -142,14 +142,14 @@ export function ProviderCard({ provider, onSelect }: ProviderCardProps) {
           )}
         </CardContent>
 
-        <CardFooter className="pt-2 pb-4 border-t bg-muted/20 flex items-center justify-between gap-2">
+        <CardFooter className="pt-2 pb-3.5 border-t bg-muted/20 flex items-center justify-between gap-2">
           {/* Phone dialer trigger */}
           {phones.length > 0 ? (
             <Button
               size="sm"
               variant="outline"
               onClick={handlePhoneClick}
-              className="h-9 px-3 gap-1.5 text-xs font-semibold rounded-xl bg-background border-border hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors min-h-[38px]"
+              className="h-10 px-3.5 gap-1.5 text-xs font-bold rounded-xl bg-background border-border hover:bg-primary hover:text-primary-foreground hover:border-primary active:scale-95 transition-all min-h-[40px]"
               aria-label={`الاتصال بـ ${provider.name_ar}`}
             >
               <Phone className="w-3.5 h-3.5 text-emerald-600 group-hover:text-inherit" />
@@ -164,7 +164,7 @@ export function ProviderCard({ provider, onSelect }: ProviderCardProps) {
           <Button
             size="sm"
             variant="ghost"
-            className="h-9 px-2.5 text-xs text-muted-foreground group-hover:text-primary gap-1 font-medium mr-auto"
+            className="h-10 px-3 text-xs text-muted-foreground group-hover:text-primary gap-1 font-semibold mr-auto min-h-[40px]"
             onClick={(e) => {
               e.stopPropagation();
               onSelect?.(provider);

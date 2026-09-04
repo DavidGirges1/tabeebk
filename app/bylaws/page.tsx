@@ -14,6 +14,7 @@ import {
   HelpCircle,
   Building2,
   ArrowRight,
+  ArrowLeft,
   ShieldCheck,
   Percent,
   Clock,
@@ -34,15 +35,15 @@ export default function BylawsPage() {
 
       <main className="container max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 flex-1 space-y-10">
         {/* Breadcrumb / Back Link */}
-        <div className="flex items-center justify-between gap-4">
-          <Button asChild variant="ghost" size="sm" className="gap-2 text-xs font-semibold text-muted-foreground hover:text-foreground">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <Button asChild variant="ghost" size="sm" className="gap-2 text-xs font-semibold text-muted-foreground hover:text-foreground self-start min-h-[38px]">
             <Link href="/">
               <ArrowRight className="w-4 h-4" />
               العودة إلى الدليل الطبي والبحث
             </Link>
           </Button>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 self-start sm:self-auto">
             <Badge variant="outline" className="text-xs bg-primary/5 text-primary border-primary/20">
               إصدار عام 2026 المعتمد
             </Badge>
@@ -87,10 +88,16 @@ export default function BylawsPage() {
 
           {/* Subscriptions Table */}
           <div className="space-y-3">
-            <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-primary" />
-              أولاً: جدول الاشتراكات الدورية
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-primary" />
+                أولاً: جدول الاشتراكات الدورية
+              </h3>
+              <span className="text-[11px] text-muted-foreground sm:hidden flex items-center gap-1 font-medium bg-muted/60 px-2 py-0.5 rounded-full">
+                <span>اسحب أفقياً</span>
+                <ArrowLeft className="w-3 h-3 text-primary animate-pulse" />
+              </span>
+            </div>
 
             <div className="rounded-2xl border bg-card shadow-sm overflow-hidden overflow-x-auto">
               <table className="w-full text-right text-xs sm:text-sm">
@@ -156,10 +163,16 @@ export default function BylawsPage() {
 
           {/* Member Contribution Percentages */}
           <div className="space-y-3">
-            <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-600" />
-              ثانياً: نسب مساهمة العضو في الخدمات العلاجية المباشرة
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-600" />
+                ثانياً: نسب مساهمة العضو في الخدمات العلاجية المباشرة
+              </h3>
+              <span className="text-[11px] text-muted-foreground sm:hidden flex items-center gap-1 font-medium bg-muted/60 px-2 py-0.5 rounded-full">
+                <span>اسحب أفقياً</span>
+                <ArrowLeft className="w-3 h-3 text-emerald-600 animate-pulse" />
+              </span>
+            </div>
 
             <div className="rounded-2xl border bg-card shadow-sm overflow-hidden overflow-x-auto">
               <table className="w-full text-right text-xs sm:text-sm">

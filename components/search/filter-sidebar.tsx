@@ -15,6 +15,7 @@ interface FilterSidebarProps {
   onFilterChange: (newFilters: Partial<FilterState>) => void;
   onReset: () => void;
   className?: string;
+  hideHeader?: boolean;
 }
 
 export function FilterSidebar({
@@ -26,6 +27,7 @@ export function FilterSidebar({
   onFilterChange,
   onReset,
   className,
+  hideHeader = false,
 }: FilterSidebarProps) {
   const [govSearch, setGovSearch] = useState("");
   const [specSearch, setSpecSearch] = useState("");
@@ -43,21 +45,23 @@ export function FilterSidebar({
   return (
     <aside className={cn("space-y-6 select-none", className)}>
       {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-border/70">
-        <div className="flex items-center gap-2 font-bold text-base text-foreground">
-          <Filter className="w-4 h-4 text-primary" />
-          <span>تصفية النتائج</span>
+      {!hideHeader && (
+        <div className="flex items-center justify-between pb-3 border-b border-border/70">
+          <div className="flex items-center gap-2 font-bold text-base text-foreground">
+            <Filter className="w-4 h-4 text-primary" />
+            <span>تصفية النتائج</span>
+          </div>
+          {(filters.gov || filters.type || filters.specialty || filters.q) && (
+            <button
+              onClick={onReset}
+              className="text-xs text-primary hover:text-primary/80 transition-colors flex items-center gap-1 font-semibold"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              إعادة ضبط
+            </button>
+          )}
         </div>
-        {(filters.gov || filters.type || filters.specialty || filters.q) && (
-          <button
-            onClick={onReset}
-            className="text-xs text-primary hover:text-primary/80 transition-colors flex items-center gap-1 font-semibold"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            إعادة ضبط
-          </button>
-        )}
-      </div>
+      )}
 
       {/* Provider Types (Facilities) - Only if tab is not 'doctors' */}
       {filters.tab !== "doctors" && (

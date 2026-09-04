@@ -105,38 +105,40 @@ export function DoctorsTab({
   return (
     <div className="space-y-6 animate-in fade-in select-none">
       {/* Top Action Bar */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-card border-2 border-border shadow-sm space-y-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-card border-2 border-border shadow-sm space-y-3 sm:space-y-4">
+        <div className="flex items-center justify-between gap-2 sm:gap-4">
           <div>
-            <h2 className="text-xl sm:text-2xl font-black text-foreground flex items-center gap-2.5">
-              <User className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+            <h2 className="text-base sm:text-2xl font-black text-foreground flex items-center gap-1.5 sm:gap-2.5">
+              <User className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span>إدارة بيانات الأطباء والاستشاريين</span>
             </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-              إجمالي المسجلين: <strong className="text-foreground">{totalCount.toLocaleString("ar-EG")}</strong> طبيب
+            <p className="text-[11px] sm:text-sm text-muted-foreground mt-0.5">
+              المسجلين: <strong className="text-foreground">{totalCount.toLocaleString("ar-EG")}</strong> طبيب
             </p>
           </div>
 
           <Button
             onClick={onAddNew}
-            className="w-full sm:w-auto h-13 px-6 text-base font-bold rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20 gap-2 min-h-[50px]"
+            aria-label="➕ إضافة طبيب جديد"
+            className="h-9 sm:h-12 px-3 sm:px-6 text-xs sm:text-base font-bold rounded-xl sm:rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20 gap-1.5 shrink-0 min-h-[38px]"
           >
-            <PlusCircle className="w-5 h-5" />
-            <span>➕ إضافة طبيب جديد</span>
+            <PlusCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">➕ إضافة طبيب جديد</span>
+            <span className="sm:hidden">إضافة طبيب</span>
           </Button>
         </div>
 
         {/* Search & Filters Controls */}
-        <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-2 border-t">
+        <div className="space-y-2 pt-2 border-t">
           {/* Search Input */}
-          <div className="sm:col-span-5 relative">
-            <Search className="w-5 h-5 absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+          <div className="relative">
+            <Search className="w-4 h-4 sm:w-5 sm:h-5 absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
             <Input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="ابحث باسم الطبيب، التخصص، العنوان، أو الهاتف..."
-              className="h-12 pr-11 pl-10 text-sm sm:text-base font-medium rounded-xl bg-muted/40"
+              placeholder="ابحث باسم الطبيب، التخصص، أو العنوان..."
+              className="h-10 sm:h-12 pr-10 pl-10 text-xs sm:text-base font-medium rounded-xl bg-muted/40"
             />
             {searchQuery && (
               <button
@@ -149,54 +151,60 @@ export function DoctorsTab({
             )}
           </div>
 
-          {/* Governorate Filter */}
-          <div className="sm:col-span-3">
-            <select
-              value={selectedGov}
-              onChange={(e) => {
-                setSelectedGov(e.target.value);
-                setPage(1);
-              }}
-              className="w-full h-12 px-3 rounded-xl border border-input bg-muted/40 text-sm font-semibold focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
-            >
-              <option value="">كل المحافظات</option>
-              {governorates.map((gov) => (
-                <option key={gov.id} value={gov.id}>
-                  {gov.name_ar}
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* Filters Row - 2 columns on mobile */}
+          <div className="grid grid-cols-12 gap-2">
+            {/* Governorate Filter */}
+            <div className="col-span-6 sm:col-span-5">
+              <select
+                value={selectedGov}
+                onChange={(e) => {
+                  setSelectedGov(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full h-9 sm:h-11 px-2 sm:px-3 rounded-xl border border-input bg-muted/40 text-xs sm:text-sm font-semibold focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+              >
+                <option value="">كل المحافظات</option>
+                {governorates.map((gov) => (
+                  <option key={gov.id} value={gov.id}>
+                    {gov.name_ar}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* Specialty Filter */}
-          <div className="sm:col-span-3">
-            <select
-              value={selectedSpecialty}
-              onChange={(e) => {
-                setSelectedSpecialty(e.target.value);
-                setPage(1);
-              }}
-              className="w-full h-12 px-3 rounded-xl border border-input bg-muted/40 text-sm font-semibold focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
-            >
-              <option value="">كل التخصصات</option>
-              {MEDICAL_SPECIALTIES.map((spec) => (
-                <option key={spec} value={spec}>
-                  {spec}
-                </option>
-              ))}
-            </select>
-          </div>
+            {/* Specialty Filter */}
+            <div className="col-span-4 sm:col-span-5">
+              <select
+                value={selectedSpecialty}
+                onChange={(e) => {
+                  setSelectedSpecialty(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full h-9 sm:h-11 px-2 sm:px-3 rounded-xl border border-input bg-muted/40 text-xs sm:text-sm font-semibold focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+              >
+                <option value="">كل التخصصات</option>
+                {MEDICAL_SPECIALTIES.map((spec) => (
+                  <option key={spec} value={spec}>
+                    {spec}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* Reset Filters Button */}
-          <div className="sm:col-span-1">
-            <Button
-              variant="outline"
-              onClick={handleResetFilters}
-              title="إعادة ضبط الفلاتر"
-              className="w-full h-12 rounded-xl text-sm font-bold text-muted-foreground hover:text-foreground p-0 flex items-center justify-center"
-            >
-              <RotateCcw className="w-4 h-4" />
-            </Button>
+            {/* Reset Filters */}
+            <div className="col-span-2 sm:col-span-2 flex justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleResetFilters}
+                disabled={!searchQuery && !selectedGov && !selectedSpecialty}
+                className="w-full h-9 sm:h-11 rounded-xl text-xs font-bold gap-1 p-0 sm:px-3 border-border hover:bg-muted"
+                title="إعادة ضبط الفلاتر"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">إعادة ضبط</span>
+              </Button>
+            </div>
           </div>
         </div>
       </div>

@@ -67,157 +67,160 @@ export function OverviewTab({
   return (
     <div className="space-y-8 animate-in fade-in select-none">
       {/* Welcome Banner */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-l from-primary/10 via-blue-50 to-emerald-50/60 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 border border-primary/20 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div className="space-y-2">
+      {/* Welcome Banner */}
+      <div className="p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-l from-primary/10 via-blue-50 to-emerald-50/60 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 border border-primary/20 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6">
+        <div className="space-y-1.5 sm:space-y-2">
           <div className="flex items-center gap-2">
-            <Badge className="bg-primary text-primary-foreground text-xs px-3 py-1 font-bold">
+            <Badge className="bg-primary text-primary-foreground text-[10px] sm:text-xs px-2.5 py-0.5 font-bold">
               لوحة التحكم 2026
             </Badge>
-            <span className="text-xs text-muted-foreground font-semibold flex items-center gap-1">
+            <span className="text-[11px] sm:text-xs text-muted-foreground font-semibold flex items-center gap-1">
               <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-              تحديث البيانات فوري ومباشر في السحابة
+              تحديث فوري ومباشر
             </span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
+          <h2 className="text-lg sm:text-3xl font-black text-foreground tracking-tight leading-tight">
             مرحباً بك في نظام إدارة الشبكة الطبية
           </h2>
-          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
+          <p className="text-xs sm:text-base text-muted-foreground max-w-2xl leading-relaxed hidden sm:block">
             يمكنك من هنا تعديل أي بيانات حالية، أو إضافة أطباء ومستشفيات ومراكز جديدة بكل سهولة ويسر. أي تغيير يتم حفظه يظهر فوراً للزوار على الموقع.
           </p>
         </div>
 
         {/* Quick Action Buttons */}
-        <div className="flex flex-col sm:flex-row items-stretch gap-3 w-full md:w-auto shrink-0">
+        <div className="grid grid-cols-2 sm:flex sm:flex-row items-stretch gap-2.5 w-full md:w-auto shrink-0 pt-1 sm:pt-0">
           <Button
             onClick={onAddNewDoctor}
-            className="h-13 text-sm sm:text-base font-bold rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20 gap-2 min-h-[50px]"
+            aria-label="إضافة طبيب جديد"
+            className="h-10 sm:h-13 text-xs sm:text-base font-bold rounded-xl sm:rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20 gap-1.5 sm:gap-2 min-h-[42px]"
           >
-            <PlusCircle className="w-5 h-5" />
-            <span>➕ إضافة طبيب جديد</span>
+            <PlusCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span>إضافة طبيب جديد</span>
           </Button>
 
           <Button
             onClick={onAddNewProvider}
-            className="h-13 text-sm sm:text-base font-bold rounded-2xl bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 gap-2 min-h-[50px]"
+            aria-label="إضافة منشأة / مستشفى"
+            className="h-10 sm:h-13 text-xs sm:text-base font-bold rounded-xl sm:rounded-2xl bg-primary hover:bg-primary/90 text-white shadow-md shadow-primary/20 gap-1.5 sm:gap-2 min-h-[42px]"
           >
-            <PlusCircle className="w-5 h-5" />
-            <span>➕ إضافة منشأة / مستشفى</span>
+            <PlusCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span>إضافة منشأة / مستشفى</span>
           </Button>
         </div>
       </div>
 
-      {/* Main Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      {/* Main Metric Cards - 2x2 grid on mobile for clean visibility */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
         {/* Doctors Card */}
         <div
           onClick={() => onNavigateTab("doctors")}
-          className="group cursor-pointer p-6 rounded-3xl bg-card border-2 border-border hover:border-emerald-500 hover:shadow-lg transition-all space-y-4"
+          className="group cursor-pointer p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-card border-2 border-border hover:border-emerald-500 hover:shadow-lg transition-all space-y-2.5 sm:space-y-4"
         >
           <div className="flex items-center justify-between">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <User className="w-6 h-6 stroke-[2.5]" />
+            <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <User className="w-4 h-4 sm:w-6 sm:h-6 stroke-[2.5]" />
             </div>
-            <Badge className="bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 text-xs px-2.5 py-0.5 font-bold">
-              استشاريين وأطباء
+            <Badge className="bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 text-[10px] sm:text-xs px-2 py-0.5 font-bold">
+              الأطباء
             </Badge>
           </div>
 
           <div>
-            <p className="text-3xl sm:text-4xl font-black text-foreground">
+            <p className="text-2xl sm:text-4xl font-black text-foreground">
               {totalDoctors.toLocaleString("ar-EG")}
             </p>
-            <p className="text-sm font-bold text-muted-foreground mt-1">
+            <p className="text-xs sm:text-sm font-bold text-muted-foreground mt-0.5 sm:mt-1">
               إجمالي الأطباء المسجلين
             </p>
           </div>
 
-          <div className="pt-2 border-t flex items-center justify-between text-xs font-bold text-emerald-600 dark:text-emerald-400">
-            <span>إدارة وتعديل الأطباء</span>
-            <ArrowRight className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          <div className="pt-1.5 sm:pt-2 border-t flex items-center justify-between text-[11px] sm:text-xs font-bold text-emerald-600 dark:text-emerald-400">
+            <span>إدارة وتعديل</span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
           </div>
         </div>
 
         {/* Providers Card */}
         <div
           onClick={() => onNavigateTab("providers")}
-          className="group cursor-pointer p-6 rounded-3xl bg-card border-2 border-border hover:border-blue-500 hover:shadow-lg transition-all space-y-4"
+          className="group cursor-pointer p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-card border-2 border-border hover:border-blue-500 hover:shadow-lg transition-all space-y-2.5 sm:space-y-4"
         >
           <div className="flex items-center justify-between">
-            <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Building2 className="w-6 h-6 stroke-[2.5]" />
+            <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Building2 className="w-4 h-4 sm:w-6 sm:h-6 stroke-[2.5]" />
             </div>
-            <Badge className="bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 text-xs px-2.5 py-0.5 font-bold">
-              مستشفيات ومراكز
+            <Badge className="bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 text-[10px] sm:text-xs px-2 py-0.5 font-bold">
+              المنشآت
             </Badge>
           </div>
 
           <div>
-            <p className="text-3xl sm:text-4xl font-black text-foreground">
+            <p className="text-2xl sm:text-4xl font-black text-foreground">
               {totalProviders.toLocaleString("ar-EG")}
             </p>
-            <p className="text-sm font-bold text-muted-foreground mt-1">
+            <p className="text-xs sm:text-sm font-bold text-muted-foreground mt-0.5 sm:mt-1">
               إجمالي المنشآت الطبية
             </p>
           </div>
 
-          <div className="pt-2 border-t flex items-center justify-between text-xs font-bold text-blue-600 dark:text-blue-400">
-            <span>إدارة وتعديل المنشآت</span>
-            <ArrowRight className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          <div className="pt-1.5 sm:pt-2 border-t flex items-center justify-between text-[11px] sm:text-xs font-bold text-blue-600 dark:text-blue-400">
+            <span>إدارة وتعديل</span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
           </div>
         </div>
 
         {/* Governorates Card */}
         <div
           onClick={() => onNavigateTab("governorates")}
-          className="group cursor-pointer p-6 rounded-3xl bg-card border-2 border-border hover:border-purple-500 hover:shadow-lg transition-all space-y-4"
+          className="group cursor-pointer p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-card border-2 border-border hover:border-purple-500 hover:shadow-lg transition-all space-y-2.5 sm:space-y-4"
         >
           <div className="flex items-center justify-between">
-            <div className="w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-950/80 text-purple-600 dark:text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <MapPin className="w-6 h-6 stroke-[2.5]" />
+            <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-purple-100 dark:bg-purple-950/80 text-purple-600 dark:text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <MapPin className="w-4 h-4 sm:w-6 sm:h-6 stroke-[2.5]" />
             </div>
-            <Badge className="bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800 text-xs px-2.5 py-0.5 font-bold">
-              تغطية جغرافية
+            <Badge className="bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800 text-[10px] sm:text-xs px-2 py-0.5 font-bold">
+              المحافظات
             </Badge>
           </div>
 
           <div>
-            <p className="text-3xl sm:text-4xl font-black text-foreground">
+            <p className="text-2xl sm:text-4xl font-black text-foreground">
               {totalGovernorates.toLocaleString("ar-EG")}
             </p>
-            <p className="text-sm font-bold text-muted-foreground mt-1">
+            <p className="text-xs sm:text-sm font-bold text-muted-foreground mt-0.5 sm:mt-1">
               محافظات الجمهورية المغطاة
             </p>
           </div>
 
-          <div className="pt-2 border-t flex items-center justify-between text-xs font-bold text-purple-600 dark:text-purple-400">
-            <span>عرض المحافظات وتوزيعها</span>
-            <ArrowRight className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          <div className="pt-1.5 sm:pt-2 border-t flex items-center justify-between text-[11px] sm:text-xs font-bold text-purple-600 dark:text-purple-400">
+            <span>عرض التوزيع</span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
           </div>
         </div>
 
         {/* Total Network Card */}
-        <div className="p-6 rounded-3xl bg-slate-900 text-white border-2 border-slate-800 shadow-md space-y-4">
+        <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-slate-900 text-white border-2 border-slate-800 shadow-md space-y-2.5 sm:space-y-4">
           <div className="flex items-center justify-between">
-            <div className="w-12 h-12 rounded-2xl bg-slate-800 text-amber-400 flex items-center justify-center">
-              <Layers className="w-6 h-6 stroke-[2.5]" />
+            <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-slate-800 text-amber-400 flex items-center justify-center">
+              <Layers className="w-4 h-4 sm:w-6 sm:h-6 stroke-[2.5]" />
             </div>
-            <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-xs px-2.5 py-0.5 font-bold">
-              إجمالي الشبكة 2026
+            <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[10px] sm:text-xs px-2 py-0.5 font-bold">
+              الشبكة
             </Badge>
           </div>
 
           <div>
-            <p className="text-3xl sm:text-4xl font-black text-white">
+            <p className="text-2xl sm:text-4xl font-black text-white">
               {totalEntities.toLocaleString("ar-EG")}
             </p>
-            <p className="text-sm font-bold text-slate-400 mt-1">
-              مجموع الأطباء والمستشفيات
+            <p className="text-xs sm:text-sm font-bold text-slate-400 mt-0.5 sm:mt-1">
+              إجمالي الشبكة 2026
             </p>
           </div>
 
-          <div className="pt-2 border-t border-slate-800 flex items-center gap-1.5 text-xs text-emerald-400 font-semibold">
-            <CheckCircle2 className="w-4 h-4" />
-            <span>قاعدة البيانات محدثة بالكامل</span>
+          <div className="pt-1.5 sm:pt-2 border-t border-slate-800 flex items-center gap-1 text-[11px] sm:text-xs text-emerald-400 font-semibold truncate">
+            <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+            <span>محدثة بالكامل</span>
           </div>
         </div>
       </div>

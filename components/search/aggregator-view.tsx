@@ -142,47 +142,30 @@ export function AggregatorView({
   return (
     <div className="min-h-screen pb-20 md:pb-12 bg-background">
       {/* Refined & Decluttered Hero Search Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-primary/8 via-background to-background pt-8 pb-10 border-b border-border/40">
+      <section className="relative overflow-hidden bg-gradient-to-b from-primary/8 via-background to-background pt-5 pb-6 sm:pt-8 sm:pb-10 border-b border-border/40">
         <div className="container max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
           
-          {/* Top Quick Links & Announcements */}
-          <div className="flex flex-wrap items-center justify-center gap-2.5 mb-5">
-            <Badge
-              variant="outline"
-              className="px-3.5 py-1 text-xs font-semibold gap-1.5 rounded-full bg-primary/10 text-primary border-primary/20 shadow-none"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>دليل شبكة التعاقدات الطبية 2026</span>
-            </Badge>
-
+          {/* Top Supervisor Badge - Centered and Clean */}
+          <div className="flex items-center justify-center mb-3 sm:mb-4">
             <Link
               href="/introduction"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1 text-xs font-semibold rounded-full bg-muted/80 hover:bg-muted text-muted-foreground hover:text-foreground border border-border transition-all"
+              className="inline-flex items-center gap-2 px-4 py-1.5 text-xs sm:text-sm font-semibold rounded-full bg-primary/10 hover:bg-primary/15 text-primary border border-primary/20 transition-all shadow-sm group"
             >
-              <HeartHandshake className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-              <span>إشراف وإهداء: أ/ تامر صبحي</span>
-              <ChevronLeft className="w-3 h-3 text-muted-foreground" />
-            </Link>
-
-            <Link
-              href="/bylaws"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1 text-xs font-semibold rounded-full bg-emerald-500/10 hover:bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/20 transition-all"
-            >
-              <BookOpen className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              <span>لائحة الاشتراكات والحدود القصوى 2026</span>
-              <ChevronLeft className="w-3 h-3" />
+              <HeartHandshake className="w-4 h-4 text-primary shrink-0" />
+              <span>إشراف: أ/ تامر صبحي عبدالله</span>
+              <ChevronLeft className="w-3.5 h-3.5 text-primary/70 group-hover:-translate-x-0.5 transition-transform" />
             </Link>
           </div>
 
           {/* Hero Heading */}
-          <div className="max-w-3xl mx-auto text-center mb-7">
-            <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight leading-tight sm:leading-tight">
+          <div className="max-w-3xl mx-auto text-center mb-4 sm:mb-6">
+            <h1 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-foreground tracking-tight leading-tight">
               ابحث في شبكة الرعاية الطبية
             </h1>
           </div>
 
           {/* Search Bar + Mobile Filter Trigger */}
-          <div className="max-w-2xl mx-auto space-y-4">
+          <div className="max-w-2xl mx-auto space-y-3 sm:space-y-4">
             <div className="flex items-center gap-2">
               <div className="flex-1">
                 <SearchBar
@@ -209,8 +192,8 @@ export function AggregatorView({
               </div>
             </div>
 
-            {/* Beginner Quick Search Hint */}
-            <div className="flex items-center justify-center gap-1.5 text-[11px] sm:text-xs text-muted-foreground/80 px-2 text-center select-none">
+            {/* Beginner Quick Search Hint (Hidden on mobile to save prime screen real-estate) */}
+            <div className="hidden sm:flex items-center justify-center gap-1.5 text-xs text-muted-foreground/80 px-2 text-center select-none">
               <span className="inline-block">💡</span>
               <span>
                 <strong>طريقة سريعة:</strong> اكتب اسم المستشفى أو الدكتور أو التخصص أو المحافظة مباشرة، أو استخدم الفلاتر السريعة بالأسفل.
@@ -219,7 +202,7 @@ export function AggregatorView({
 
             {/* Quick Facility Category Pills */}
             {filters.tab !== "doctors" && (
-              <div className="pt-1">
+              <div className="pt-0.5 sm:pt-1">
                 <StatsBanner
                   selectedType={filters.type}
                   onSelectType={(t) => updateFilters({ type: t })}
@@ -233,7 +216,7 @@ export function AggregatorView({
       </section>
 
       {/* Main Content Area */}
-      <main className="container max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <main className="container max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Desktop Filter Sidebar (3 cols on lg) */}
@@ -250,20 +233,20 @@ export function AggregatorView({
           </div>
 
           {/* Content Section (9 cols on lg) */}
-          <div className="lg:col-span-9 space-y-6">
+          <div className="lg:col-span-9 space-y-5 sm:space-y-6">
             
             {/* Top Tabs & Result Counters */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/80">
+            <div className="flex items-center justify-between gap-4 pb-3 border-b border-border/80">
               
-              {/* Category Tabs */}
+              {/* Category Tabs (Desktop / Tablet only - mobile uses bottom nav to avoid duplication) */}
               <Tabs
                 value={filters.tab}
                 onValueChange={(val) =>
                   updateFilters({ tab: val as FilterState["tab"] })
                 }
-                className="w-full sm:w-auto"
+                className="hidden md:flex"
               >
-                <TabsList className="w-full sm:w-auto bg-muted/60 p-1 rounded-xl h-11">
+                <TabsList className="bg-muted/60 p-1 rounded-xl h-11">
                   <TabsTrigger value="all" className="rounded-lg text-xs sm:text-sm font-semibold">
                     <Layers className="w-4 h-4 ml-1.5" />
                     <span>الكل ({displayTotalProviders + displayTotalDoctors})</span>
@@ -282,7 +265,7 @@ export function AggregatorView({
               </Tabs>
 
               {/* Result Count Indicator */}
-              <div className="flex items-center gap-2 text-xs sm:text-sm font-medium text-muted-foreground self-end sm:self-center">
+              <div className="flex items-center gap-2 text-xs sm:text-sm font-medium text-muted-foreground mr-auto md:mr-0">
                 <span>النتائج المعروضة:</span>
                 <Badge variant="secondary" className="font-mono text-xs px-2.5 py-0.5 rounded-full font-bold">
                   {totalActiveItems} نتيجة

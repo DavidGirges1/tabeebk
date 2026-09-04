@@ -69,22 +69,25 @@ export function FilterDrawer({
         </Button>
       </SheetTrigger>
 
-      <SheetContent side="right" className="w-full sm:max-w-md p-6 overflow-y-auto">
-        <SheetHeader className="pb-4 border-b">
+      <SheetContent side="bottom" className="w-full sm:max-w-xl mx-auto p-5 sm:p-6 overflow-y-auto max-h-[88vh] rounded-t-[28px] border-t shadow-2xl">
+        {/* Mobile Pull Handle */}
+        <div className="w-12 h-1.5 bg-muted-foreground/25 rounded-full mx-auto -mt-1 mb-3 select-none" />
+
+        <SheetHeader className="pb-3 border-b">
           <SheetTitle className="flex items-center justify-between">
-            <span className="flex items-center gap-2">
+            <span className="flex items-center gap-2 text-base sm:text-lg font-bold">
               <Filter className="w-5 h-5 text-primary" />
-              تصفية النتائج
+              تصفية ودقة البحث
             </span>
             {activeCount > 0 && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-xs px-2.5 py-0.5 rounded-full font-bold">
                 {activeCount} فلتر نشط
               </Badge>
             )}
           </SheetTitle>
         </SheetHeader>
 
-        <div className="py-4">
+        <div className="py-3">
           <FilterSidebar
             filters={filters}
             governorates={governorates}
@@ -93,25 +96,26 @@ export function FilterDrawer({
             typeCounts={typeCounts}
             onFilterChange={handleFilterSelect}
             onReset={onReset}
+            hideHeader={true}
           />
         </div>
 
-        <SheetFooter className="sticky bottom-0 bg-background pt-4 border-t gap-2">
+        <SheetFooter className="sticky bottom-0 bg-background/95 backdrop-blur-md pt-3 pb-3 border-t gap-2.5">
           <Button
             onClick={() => setIsOpen(false)}
-            className="w-full h-12 rounded-xl font-bold text-sm shadow-md"
+            className="w-full h-12 rounded-xl font-bold text-sm shadow-md min-h-[44px]"
           >
-            عرض النتائج
+            عرض النتائج {activeCount > 0 ? `(${activeCount} فلتر)` : ""}
           </Button>
 
           {activeCount > 0 && (
             <Button
               variant="outline"
               onClick={onReset}
-              className="w-full h-11 rounded-xl text-xs gap-1.5"
+              className="w-full h-11 rounded-xl text-xs gap-1.5 min-h-[44px]"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              إعادة ضبط الفلاتر
+              إعادة ضبط كل الفلاتر
             </Button>
           )}
         </SheetFooter>

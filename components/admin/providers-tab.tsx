@@ -114,29 +114,31 @@ export function ProvidersTab({
   return (
     <div className="space-y-6 animate-in fade-in select-none">
       {/* Top Action Bar */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-card border-2 border-border shadow-sm space-y-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-card border-2 border-border shadow-sm space-y-3 sm:space-y-4">
+        <div className="flex items-center justify-between gap-2 sm:gap-4">
           <div>
-            <h2 className="text-xl sm:text-2xl font-black text-foreground flex items-center gap-2.5">
-              <Building2 className="w-6 h-6 text-primary" />
+            <h2 className="text-base sm:text-2xl font-black text-foreground flex items-center gap-1.5 sm:gap-2.5">
+              <Building2 className="w-5 h-5 text-primary shrink-0" />
               <span>إدارة المستشفيات والمنشآت والمراكز الطبية</span>
             </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-              إجمالي المنشآت: <strong className="text-foreground">{totalCount.toLocaleString("ar-EG")}</strong> صرح طبي
+            <p className="text-[11px] sm:text-sm text-muted-foreground mt-0.5">
+              المسجلين: <strong className="text-foreground">{totalCount.toLocaleString("ar-EG")}</strong> منشأة طبية
             </p>
           </div>
 
           <Button
             onClick={onAddNew}
-            className="w-full sm:w-auto h-13 px-6 text-base font-bold rounded-2xl bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 gap-2 min-h-[50px]"
+            aria-label="➕ إضافة منشأة / مستشفى جديد"
+            className="h-9 sm:h-12 px-3 sm:px-6 text-xs sm:text-base font-bold rounded-xl sm:rounded-2xl bg-primary hover:bg-primary/90 text-white shadow-md shadow-primary/20 gap-1.5 shrink-0 min-h-[38px]"
           >
-            <PlusCircle className="w-5 h-5" />
-            <span>➕ إضافة منشأة / مستشفى جديد</span>
+            <PlusCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">➕ إضافة منشأة / مستشفى جديد</span>
+            <span className="sm:hidden">إضافة منشأة</span>
           </Button>
         </div>
 
         {/* Type Filter Pills Bar */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none pt-2 border-t">
+        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1.5 scrollbar-none pt-2 border-t">
           {FACILITY_TYPES.map((t) => {
             const isSelected = selectedType === t.id;
             return (
@@ -146,7 +148,7 @@ export function ProvidersTab({
                   setSelectedType(t.id);
                   setPage(1);
                 }}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shrink-0 transition-all ${
+                className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-sm font-bold shrink-0 transition-all ${
                   isSelected
                     ? "bg-primary text-primary-foreground shadow-md shadow-primary/20 scale-105"
                     : "bg-muted hover:bg-muted/80 text-foreground border border-border"
@@ -160,16 +162,16 @@ export function ProvidersTab({
         </div>
 
         {/* Search & Filters Controls */}
-        <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-2 border-t">
+        <div className="space-y-2 pt-2 border-t">
           {/* Search Input */}
-          <div className="sm:col-span-6 relative">
-            <Search className="w-5 h-5 absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+          <div className="relative">
+            <Search className="w-4 h-4 sm:w-5 sm:h-5 absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
             <Input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="ابحث باسم المستشفى أو المركز، العنوان، أو الهاتف..."
-              className="h-12 pr-11 pl-10 text-sm sm:text-base font-medium rounded-xl bg-muted/40"
+              placeholder="ابحث باسم المستشفى، المركز، أو العنوان..."
+              className="h-10 sm:h-12 pr-10 pl-10 text-xs sm:text-base font-medium rounded-xl bg-muted/40"
             />
             {searchQuery && (
               <button
@@ -182,35 +184,42 @@ export function ProvidersTab({
             )}
           </div>
 
-          {/* Governorate Filter */}
-          <div className="sm:col-span-3">
-            <select
-              value={selectedGov}
-              onChange={(e) => {
-                setSelectedGov(e.target.value);
-                setPage(1);
-              }}
-              className="w-full h-12 px-3 rounded-xl border border-input bg-muted/40 text-sm font-semibold focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
-            >
-              <option value="">كل المحافظات</option>
-              {governorates.map((gov) => (
-                <option key={gov.id} value={gov.id}>
-                  {gov.name_ar}
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* Filters Row */}
+          <div className="grid grid-cols-12 gap-2">
+            {/* Governorate Filter */}
+            <div className="col-span-8 sm:col-span-9">
+              <select
+                value={selectedGov}
+                onChange={(e) => {
+                  setSelectedGov(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full h-9 sm:h-11 px-2.5 sm:px-3 rounded-xl border border-input bg-muted/40 text-xs sm:text-sm font-semibold focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+              >
+                <option value="">كل المحافظات</option>
+                {governorates.map((gov) => (
+                  <option key={gov.id} value={gov.id}>
+                    {gov.name_ar}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* Reset Filters Button */}
-          <div className="sm:col-span-3">
-            <Button
-              variant="outline"
-              onClick={handleResetFilters}
-              className="w-full h-12 rounded-xl text-sm font-bold text-muted-foreground hover:text-foreground gap-2"
-            >
-              <RotateCcw className="w-4 h-4" />
-              <span>إعادة ضبط الفلاتر</span>
-            </Button>
+            {/* Reset Filters */}
+            <div className="col-span-4 sm:col-span-3 flex justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleResetFilters}
+                disabled={!searchQuery && !selectedGov && !selectedType}
+                className="w-full h-9 sm:h-11 rounded-xl text-xs font-bold gap-1 p-0 sm:px-3 border-border hover:bg-muted"
+                title="إعادة ضبط الفلاتر"
+                aria-label="إعادة ضبط الفلاتر"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>إعادة ضبط الفلاتر</span>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
